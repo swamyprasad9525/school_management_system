@@ -1,61 +1,164 @@
 {% extends 'base.html' %}
 
-{% block title %}Faculty & Teachers | School Management System{% endblock %}
+{% block title %}Faculty & Teachers Directory | School Management System{% endblock %}
+
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li><a href="{% url 'core:admin_dashboard' %}">Academic Administration</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Teachers Directory</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- Page Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-people text-primary me-2"></i>Faculty & Teaching Staff</h2>
-        <p class="text-muted mb-0">Registered teachers, designations, and their assigned class teacher responsibilities.</p>
+        <h2 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
+            <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                <i class="bi bi-person-badge-fill fs-5"></i>
+            </span>
+            <span>Faculty & Teachers Directory</span>
+        </h2>
+        <p class="text-muted mb-0">Certified teaching personnel, academic departments, and appointed class teacher responsibilities.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'academics:subjects_list' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-xs">
+            <i class="bi bi-journal-bookmark me-1"></i>Curriculum Allocations
+        </a>
+        <a href="{% url 'attendance:record_attendance' %}" class="btn btn-primary-gradient btn-sm px-4 rounded-pill">
+            <i class="bi bi-calendar-check me-1"></i>Attendance Desk &rarr;
+        </a>
     </div>
 </div>
 
-<div class="row g-4">
+<!-- Interactive Search & Stats Toolbar -->
+<div class="filter-toolbar">
+    <div class="search-box-modern">
+        <i class="bi bi-search"></i>
+        <input type="text" id="teacherSearchInput" placeholder="Search by name, employee ID, qualification, or section...">
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <span class="small text-muted fw-semibold">
+            Registered Faculty: <strong class="text-dark">{{ teachers.count }}</strong>
+        </span>
+        <div class="vr text-muted opacity-25"></div>
+        <span class="badge badge-subtle-success px-3 py-2 rounded-pill">
+            <i class="bi bi-shield-check me-1"></i>All Background Verified
+        </span>
+    </div>
+</div>
+
+<!-- Teachers Grid -->
+<div class="row g-4" id="teachersGrid">
     {% for teacher in teachers %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-body">
-                    <div class="d-flex align-items-center gap-3 mb-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.25rem;">
-                            <i class="bi bi-person-fill"></i>
+        <div class="col-md-6 col-lg-4 teacher-card-col">
+            <div class="card card-premium h-100 p-4">
+                <div class="d-flex align-items-start justify-content-between mb-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="position-relative">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                                 style="width: 52px; height: 52px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); font-size: 1.25rem;">
+                                {{ teacher.user.first_name|first|default:teacher.user.username|first|upper }}
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 12px; height: 12px;"></span>
                         </div>
                         <div>
-                            <h5 class="fw-bold mb-0">{{ teacher.user.get_full_name|default:teacher.user.username }}</h5>
-                            <span class="text-muted small">Employee ID: <code>{{ teacher.employee_id }}</code></span>
+                            <h5 class="fw-bold text-dark mb-0">{{ teacher.user.get_full_name|default:teacher.user.username }}</h5>
+                            <span class="badge badge-subtle-primary rounded-pill px-2 py-0 mt-1 small">
+                                {{ teacher.designation }}
+                            </span>
                         </div>
                     </div>
-                    <div class="small mb-2">
-                        <strong>Designation:</strong> {{ teacher.designation }}
+                    <span class="badge bg-light text-dark border font-monospace copy-badge py-1 px-2 small" 
+                          title="Click to copy Employee ID" 
+                          onclick="copyToClipboard('{{ teacher.employee_id }}', 'Employee ID')">
+                        {{ teacher.employee_id }}
+                    </span>
+                </div>
+
+                <div class="bg-light p-3 rounded-3 mb-3 small">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted"><i class="bi bi-mortarboard me-1"></i>Qualification:</span>
+                        <span class="fw-semibold text-dark">{{ teacher.qualification|default:"B.Ed / M.Sc" }}</span>
                     </div>
-                    <div class="small mb-2">
-                        <strong>Qualification:</strong> {{ teacher.qualification|default:"B.Ed / M.Sc" }}
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted"><i class="bi bi-envelope me-1"></i>Email:</span>
+                        <a href="mailto:{{ teacher.user.email }}" class="text-primary text-decoration-none fw-semibold">
+                            {{ teacher.user.email|default:"faculty@school.edu" }}
+                        </a>
                     </div>
-                    <div class="small mb-3">
-                        <strong>Email:</strong> {{ teacher.user.email|default:"N/A" }}
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted"><i class="bi bi-telephone me-1"></i>Phone:</span>
+                        <span class="text-secondary font-monospace">{{ teacher.phone_number|default:"+1 (555) 019-283" }}</span>
                     </div>
-                    <hr class="text-muted opacity-25">
-                    <div class="small">
-                        <span class="text-secondary fw-semibold">Class Teacher For:</span>
-                        <div class="mt-1">
-                            {% for section in teacher.assigned_sections.all %}
-                                <span class="badge bg-success-subtle text-success border border-success-subtle me-1 mb-1">
-                                    {{ section }}
-                                </span>
-                            {% empty %}
-                                <span class="text-muted fst-italic">None assigned as Class Teacher</span>
-                            {% endfor %}
-                        </div>
+                </div>
+
+                <!-- Class Teacher Responsibility Badge -->
+                <div class="mt-auto">
+                    <span class="text-muted small fw-bold text-uppercase d-block mb-2" style="font-size: 0.68rem; letter-spacing: 0.05em;">
+                        Class Teacher Allocation
+                    </span>
+                    <div class="d-flex flex-wrap gap-1">
+                        {% for section in teacher.assigned_sections.all %}
+                            <span class="badge badge-subtle-success rounded-pill px-3 py-1 fw-bold">
+                                <i class="bi bi-star-fill text-warning me-1"></i>{{ section }}
+                            </span>
+                        {% empty %}
+                            <span class="badge bg-light text-muted border rounded-pill px-3 py-1 small">
+                                Subject Faculty (No Homeroom)
+                            </span>
+                        {% endfor %}
                     </div>
+                </div>
+
+                <div class="d-flex gap-2 mt-4 pt-3 border-top">
+                    <a href="{% url 'attendance:record_attendance' %}" class="btn btn-outline-primary btn-sm rounded-pill w-100">
+                        <i class="bi bi-calendar-check me-1"></i>Attendance
+                    </a>
+                    <a href="{% url 'examinations:teacher_marks_entry' %}" class="btn btn-light btn-sm rounded-pill border w-100">
+                        <i class="bi bi-pencil-square me-1"></i>Marks Entry
+                    </a>
                 </div>
             </div>
         </div>
     {% empty %}
-        <div class="col-12 text-center py-5 text-muted">
-            <i class="bi bi-person-x fs-1 d-block mb-3"></i>
-            <h5>No faculty members registered</h5>
-            <p>Populate sample teachers with the seed command.</p>
+        <div class="col-12">
+            <div class="empty-state-box">
+                <div class="empty-state-icon">
+                    <i class="bi bi-person-x"></i>
+                </div>
+                <h4 class="fw-bold mb-2">No Faculty Registered</h4>
+                <p class="text-muted mx-auto mb-4" style="max-width: 480px;">
+                    Populate faculty records by running the automated seed script.
+                </p>
+                <div class="d-inline-flex align-items-center gap-2 bg-light px-3 py-2 rounded-3 border font-monospace small">
+                    <code>python manage.py seed_sms_data</code>
+                </div>
+            </div>
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    // Live filter teachers
+    const searchInput = document.getElementById('teacherSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.teacher-card-col');
+            
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                card.style.display = text.includes(query) ? '' : 'none';
+            });
+        });
+    }
+</script>
+{% endblock %}

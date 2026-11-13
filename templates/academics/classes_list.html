@@ -2,58 +2,164 @@
 
 {% block title %}Classes & Sections | School Management System{% endblock %}
 
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li><a href="{% url 'core:admin_dashboard' %}">Academic Administration</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Classes & Sections</li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- Page Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-diagram-3 text-primary me-2"></i>Classes & Sections</h2>
-        <p class="text-muted mb-0">Overview of grades, divisions, and assigned class teachers.</p>
+        <h2 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
+            <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);">
+                <i class="bi bi-diagram-3-fill fs-5"></i>
+            </span>
+            <span>Academic Classes & Sections</span>
+        </h2>
+        <p class="text-muted mb-0">Structural hierarchy of school grade levels, classroom divisions, and faculty class teacher allocations.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'academics:students_list' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-xs">
+            <i class="bi bi-people me-1"></i>View All Students
+        </a>
+        <a href="{% url 'attendance:record_attendance' %}" class="btn btn-primary-gradient btn-sm px-4 rounded-pill">
+            <i class="bi bi-calendar2-check me-1"></i>Record Attendance &rarr;
+        </a>
     </div>
 </div>
 
-<div class="row g-4">
+<!-- Interactive Filter Toolbar -->
+<div class="filter-toolbar">
+    <div class="search-box-modern">
+        <i class="bi bi-search"></i>
+        <input type="text" id="classSearchInput" placeholder="Filter by Grade name or Section (e.g. Grade 10, Section A)...">
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <span class="small text-muted fw-semibold">
+            Total Grades: <strong class="text-dark">{{ classes.count }}</strong>
+        </span>
+        <div class="vr text-muted opacity-25"></div>
+        <span class="badge badge-subtle-success px-3 py-2 rounded-pill">
+            <i class="bi bi-check-circle me-1"></i>Current Academic Year Active
+        </span>
+    </div>
+</div>
+
+<!-- Class Cards Grid -->
+<div class="row g-4" id="classesContainer">
     {% for class_grade in classes %}
-        <div class="col-md-6 col-lg-4">
-            <div class="card shadow-sm border-0 h-100">
-                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark mb-0">{{ class_grade.name }}</h5>
-                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+        <div class="col-md-6 col-lg-4 class-item-card" data-grade-name="{{ class_grade.name|lower }}">
+            <div class="card card-premium h-100">
+                <div class="card-header-clean bg-light">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-primary text-white rounded-pill px-2 py-1 font-monospace" style="font-size: 0.72rem;">LEVEL</span>
+                        <h5 class="fw-bold text-dark mb-0">{{ class_grade.name }}</h5>
+                    </div>
+                    <span class="badge bg-white text-secondary border shadow-xs rounded-pill px-2 py-1 small">
                         {{ class_grade.sections.count }} Section{{ class_grade.sections.count|pluralize }}
                     </span>
                 </div>
-                <div class="card-body">
-                    <h6 class="text-muted small text-uppercase fw-semibold mb-3">Sections & Class Teachers</h6>
-                    <ul class="list-group list-group-flush">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="small text-muted fw-bold text-uppercase" style="font-size: 0.7rem; letter-spacing: 0.05em;">SECTIONS & ROSTER</span>
+                        <span class="small text-muted font-monospace">Capacity</span>
+                    </div>
+
+                    <div class="d-flex flex-column gap-3">
                         {% for section in class_grade.sections.all %}
-                            <li class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="fw-semibold text-primary">{{ section.name }}</span>
-                                    <div class="small text-muted">
-                                        <i class="bi bi-person me-1"></i>
-                                        {% if section.class_teacher %}
-                                            {{ section.class_teacher.user.get_full_name|default:section.class_teacher.user.username }}
-                                        {% else %}
-                                            <span class="text-warning">Unassigned</span>
-                                        {% endif %}
+                            <div class="p-3 rounded-3 border bg-white shadow-xs transition-hover section-entry" data-section-name="{{ section.name|lower }}">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="badge bg-primary-subtle text-primary fw-bold font-monospace px-2 py-1 rounded-2">
+                                            {{ section.name }}
+                                        </span>
+                                        <div class="small fw-semibold text-dark">
+                                            {% if section.class_teacher %}
+                                                {{ section.class_teacher.user.get_full_name|default:section.class_teacher.user.username }}
+                                            {% else %}
+                                                <span class="text-warning fst-italic">Faculty Unassigned</span>
+                                            {% endif %}
+                                        </div>
                                     </div>
+                                    <span class="badge badge-subtle-info rounded-pill px-2 py-1 small">
+                                        <i class="bi bi-people me-1"></i>{{ section.student_enrollments.count }} Students
+                                    </span>
                                 </div>
-                                <span class="badge bg-light text-secondary border">
-                                    {{ section.student_enrollments.count }} Students
-                                </span>
-                            </li>
+
+                                <!-- Class Capacity Bar -->
+                                <div class="d-flex align-items-center gap-2 mt-2">
+                                    <div class="progress flex-grow-1" style="height: 6px; background-color: #f1f5f9;">
+                                        <div class="progress-bar bg-primary" role="progressbar" 
+                                             style="width: {% widthratio section.student_enrollments.count 35 100 %}%; border-radius: 4px;"></div>
+                                    </div>
+                                    <span class="text-muted small" style="font-size: 0.7rem;">{{ section.student_enrollments.count }}/35</span>
+                                </div>
+                            </div>
                         {% empty %}
-                            <li class="list-group-item px-0 text-muted small">No sections created for this grade yet.</li>
+                            <div class="p-4 text-center rounded-3 bg-light text-muted small">
+                                <i class="bi bi-info-circle d-block mb-1 fs-5"></i>
+                                No sections created for this grade yet.
+                            </div>
                         {% endfor %}
-                    </ul>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-top p-3 d-flex justify-content-between align-items-center">
+                    <span class="text-muted small">
+                        <i class="bi bi-mortarboard me-1 text-primary"></i>Standard Curriculum
+                    </span>
+                    <a href="{% url 'academics:students_list' %}?class={{ class_grade.id }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                        Filter Students &rarr;
+                    </a>
                 </div>
             </div>
         </div>
     {% empty %}
-        <div class="col-12 text-center py-5 text-muted">
-            <i class="bi bi-buildings fs-1 d-block mb-3"></i>
-            <h5>No classes registered</h5>
-            <p>Run seed data to populate academic classes and sections.</p>
+        <div class="col-12">
+            <div class="empty-state-box">
+                <div class="empty-state-icon">
+                    <i class="bi bi-buildings"></i>
+                </div>
+                <h4 class="fw-bold mb-2">No Academic Classes Registered</h4>
+                <p class="text-muted mx-auto mb-4" style="max-width: 480px;">
+                    Execute the database seeder to populate sample grades, classrooms, sections, and assigned teachers.
+                </p>
+                <div class="d-inline-flex align-items-center gap-2 bg-light px-3 py-2 rounded-3 border font-monospace small">
+                    <code>python manage.py seed_sms_data</code>
+                </div>
+            </div>
         </div>
     {% endfor %}
 </div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    // Live Search Filter for Classes & Sections
+    const searchInput = document.getElementById('classSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.class-item-card');
+            
+            cards.forEach(card => {
+                const gradeName = card.getAttribute('data-grade-name') || '';
+                const sectionTexts = Array.from(card.querySelectorAll('.section-entry')).map(el => el.textContent.toLowerCase()).join(' ');
+                
+                if (gradeName.includes(query) || sectionTexts.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+</script>
+{% endblock %}

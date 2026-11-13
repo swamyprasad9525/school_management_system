@@ -1,16 +1,35 @@
 {% extends 'base.html' %}
 
-{% block title %}Students Directory | Algions SMS{% endblock %}
+{% block title %}Students Roster | Algions SMS{% endblock %}
+
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li><a href="{% url 'core:admin_dashboard' %}">Academic Administration</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Students Roster</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-person-lines-fill text-primary me-2"></i>Students Roster & Enrollments</h2>
+        <h2 class="fw-bold mb-1"><i class="bi bi-people-fill text-primary me-2"></i>Students Roster & Enrollments</h2>
         <p class="text-muted small mb-0">Directory of active pupils, class assignments, and linked parent profiles.</p>
     </div>
-    <span class="badge badge-subtle-primary px-3 py-2 rounded-pill">
-        {{ page_obj.paginator.count }} Total Active Students
-    </span>
+    <div class="d-flex gap-2">
+        {% if user.is_admin_role %}
+            <button type="button" class="btn btn-primary-gradient btn-sm rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#enrollStudentModal">
+                <i class="bi bi-person-plus-fill me-1"></i>Enroll New Student
+            </button>
+        {% endif %}
+        <span class="badge badge-subtle-primary px-3 py-2 rounded-pill d-flex align-items-center">
+            {{ page_obj.paginator.count }} Enrolled Pupils
+        </span>
+    </div>
 </div>
 
 <!-- Search & Class Filter Card -->
@@ -55,7 +74,14 @@
             <tbody>
                 {% for enrollment in page_obj %}
                     <tr>
-                        <td><code class="fw-bold font-monospace">{{ enrollment.student.admission_number }}</code></td>
+                        <td>
+                            <code class="fw-bold font-monospace copy-badge bg-light p-1 rounded border text-primary" 
+                                  onclick="copyToClipboard('{{ enrollment.student.admission_number }}')" 
+                                  title="Click to copy admission number">
+                                {{ enrollment.student.admission_number }}
+                                <i class="bi bi-copy ms-1 small text-muted"></i>
+                            </code>
+                        </td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs" 
@@ -116,5 +142,73 @@
             {% endif %}
         </ul>
     </nav>
+{% endif %}
+
+<!-- Quick Enroll Student Modal -->
+{% if user.is_admin_role %}
+<div class="modal fade" id="enrollStudentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0" style="border-radius: var(--radius-lg);">
+            <div class="modal-header border-bottom p-4">
+                <h5 class="fw-bold mb-0"><i class="bi bi-person-plus-fill text-primary me-2"></i>Enroll New Pupil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'academics:create_student' %}">
+                {% csrf_token %}
+                <div class="modal-body p-4">
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-uppercase text-secondary">First Name</label>
+                            <input type="text" name="first_name" class="form-control" placeholder="e.g. Jordan" required>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-uppercase text-secondary">Last Name</label>
+                            <input type="text" name="last_name" class="form-control" placeholder="e.g. Miller" required>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-uppercase text-secondary">Admission Number</label>
+                        <input type="text" name="admission_number" class="form-control font-monospace" placeholder="e.g. ADM-2026-005" required>
+                    </div>
+
+                    <div class="row g-3 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-uppercase text-secondary">Gender</label>
+                            <select name="gender" class="form-select">
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-uppercase text-secondary">Class & Section</label>
+                            <select name="section" class="form-select" required>
+                                {% for sec in all_sections %}
+                                    <option value="{{ sec.id }}">{{ sec }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-uppercase text-secondary">Linked Guardian</label>
+                        <select name="guardian" class="form-select">
+                            <option value="">-- Optional / None --</option>
+                            {% for g in all_guardians %}
+                                <option value="{{ g.id }}">{{ g.user.get_full_name }} ({{ g.relationship }})</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text small">Default student password will be initialized to <code>student123</code>.</div>
+                    </div>
+                </div>
+                <div class="modal-footer border-top p-3 bg-light">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill">Enroll Student</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 {% endif %}
 {% endblock %}

@@ -1,12 +1,14 @@
 import uuid
 from decimal import Decimal
+from datetime import date, timedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import transaction
 from django.db.models import Sum, Count, Q
 from django.core.paginator import Paginator
-from accounts.permissions import role_required, Role
+from accounts.permissions import role_required, admin_required, Role
+from accounts.models import StudentProfile
 from audit.models import log_action
 from .models import FeeCategory, FeeStructure, FeeInvoice, FeePayment, InvoiceStatus, PaymentMethod
 
@@ -44,12 +46,59 @@ def invoices_list(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
+    all_students = StudentProfile.objects.select_related('user').all() if user.is_admin_role else []
+    all_structures = FeeStructure.objects.select_related('category', 'class_grade').all() if user.is_admin_role else []
+
     return render(request, 'finance/invoices_list.html', {
         'page_obj': page_obj,
         'status_filter': status_filter,
         'search_query': search_query,
         'status_choices': InvoiceStatus.choices,
+        'all_students': all_students,
+        'all_structures': all_structures,
     })
+
+@admin_required
+def generate_invoice(request):
+    """
+    Modal endpoint to generate a new fee invoice for a student.
+    """
+    if request.method == 'POST':
+        student_id = request.POST.get('student')
+        structure_id = request.POST.get('fee_structure')
+        due_date_str = request.POST.get('due_date')
+
+        if not (student_id and structure_id):
+            messages.error(request, "Please select both a student and a fee structure.")
+            return redirect('finance:invoices_list')
+
+        student = get_object_or_404(StudentProfile, id=student_id)
+        structure = get_object_or_404(FeeStructure, id=structure_id)
+        due_date_val = date.fromisoformat(due_date_str) if due_date_str else (date.today() + timedelta(days=30))
+
+        inv_num = f"INV-2026-{uuid.uuid4().hex[:5].upper()}"
+
+        with transaction.atomic():
+            invoice = FeeInvoice.objects.create(
+                invoice_number=inv_num,
+                student=student,
+                fee_structure=structure,
+                total_amount=structure.amount,
+                due_date=due_date_val
+            )
+
+            log_action(
+                actor=request.user,
+                action='CREATE',
+                model_name='FeeInvoice',
+                object_id=invoice.id,
+                object_repr=f"{inv_num} (${structure.amount})",
+                details=f"Generated invoice for {student}. Category: {structure.category.name}",
+                ip_address=request.META.get('REMOTE_ADDR')
+            )
+
+        messages.success(request, f"Invoice {inv_num} for ${structure.amount} issued to {student}!")
+    return redirect('finance:invoices_list')
 
 @role_required([Role.ADMIN])
 def fee_structures(request):
@@ -72,7 +121,6 @@ def record_payment(request, invoice_id):
     )
 
     user = request.user
-    # Privacy check: Guardian can ONLY pay their own child's invoice
     if user.is_guardian_role and invoice.student.guardian != user.guardian_profile:
         raise PermissionDenied("Access Denied: You cannot make payments for this invoice.")
 
@@ -91,10 +139,8 @@ def record_payment(request, invoice_id):
                 return redirect('finance:record_payment', invoice_id=invoice.id)
 
             with transaction.atomic():
-                # Generate unique transaction reference
                 txn_ref = f"SIM-{uuid.uuid4().hex[:10].upper()}"
 
-                # Create Payment
                 payment = FeePayment.objects.create(
                     invoice=invoice,
                     transaction_reference=txn_ref,
@@ -104,7 +150,6 @@ def record_payment(request, invoice_id):
                     notes=notes_val
                 )
 
-                # Reconcile invoice ledger
                 invoice.reconcile_ledger()
 
                 log_action(
@@ -130,9 +175,6 @@ def record_payment(request, invoice_id):
 
 @role_required([Role.ADMIN, Role.GUARDIAN, Role.STUDENT])
 def payment_receipt(request, payment_id):
-    """
-    Renders an official, printable payment receipt with transaction verification.
-    """
     payment = get_object_or_404(
         FeePayment.objects.select_related('invoice__student__user', 'invoice__student__guardian__user', 'invoice__fee_structure__category', 'recorded_by'),
         id=payment_id
@@ -153,10 +195,6 @@ def payment_receipt(request, payment_id):
 
 @role_required([Role.ADMIN])
 def ledger_report(request):
-    """
-    Comprehensive fee ledger reconciliation report.
-    Reconciles: Total Invoiced = Total Collected + Outstanding Balance.
-    """
     invoices = FeeInvoice.objects.all()
     total_invoiced = invoices.aggregate(Sum('total_amount'))['total_amount__sum'] or Decimal('0.00')
     total_collected = invoices.aggregate(Sum('paid_amount'))['paid_amount__sum'] or Decimal('0.00')

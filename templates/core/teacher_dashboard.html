@@ -1,27 +1,98 @@
 {% extends 'base.html' %}
 
-{% block title %}Faculty Workspace | Algions SMS{% endblock %}
+{% block title %}Faculty Workspace | School Management System{% endblock %}
+
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Faculty Workspace</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
-<!-- Faculty Header -->
-<div class="card card-premium p-4 mb-4 border-0 text-white position-relative overflow-hidden" 
-     style="background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);">
+<!-- Faculty Header Hero -->
+<div class="card card-premium p-4 p-md-5 mb-4 border-0 text-white position-relative overflow-hidden" 
+     style="background: linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #312e81 100%);">
     <div class="row align-items-center">
         <div class="col-md-8">
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white bg-opacity-10 rounded-pill mb-2">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white bg-opacity-10 rounded-pill mb-3">
                 <i class="bi bi-person-badge-fill text-warning"></i>
-                <span class="small fw-semibold text-white">Faculty Portal &bull; {{ teacher.designation }}</span>
+                <span class="small fw-semibold text-white">Faculty Cockpit &bull; {{ teacher.designation }}</span>
             </div>
-            <h2 class="fw-bold mb-1">Welcome, {{ user.get_full_name|default:user.username }}</h2>
+            <h1 class="display-6 fw-extrabold mb-2">Welcome, {{ user.get_full_name|default:user.username }}</h1>
             <p class="text-white-50 small mb-0">
-                Employee ID: <code class="text-white bg-white bg-opacity-10 px-2 py-0 rounded">{{ teacher.employee_id }}</code> &bull; 
-                Qualifications: {{ teacher.qualification }}
+                Employee ID: <code class="text-white bg-white bg-opacity-10 px-2 py-0 rounded font-monospace">{{ teacher.employee_id }}</code> &bull; 
+                Academic Qualifications: <span class="text-white fw-medium">{{ teacher.qualification }}</span>
             </p>
         </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            <a href="{% url 'attendance:record_attendance' %}" class="btn btn-light px-4 py-2 rounded-pill fw-semibold shadow-sm text-primary">
-                <i class="bi bi-calendar2-check-fill me-1"></i>Take Today's Attendance
+        <div class="col-md-4 text-md-end mt-4 mt-md-0">
+            <a href="{% url 'attendance:record_attendance' %}" class="btn btn-light px-4 py-3 rounded-pill fw-bold shadow-lg text-primary d-inline-flex align-items-center gap-2">
+                <i class="bi bi-calendar2-check-fill fs-5"></i>
+                <span>Take Today's Roll Call &rarr;</span>
             </a>
+        </div>
+    </div>
+</div>
+
+<!-- Faculty KPI Stats Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="kpi-card p-3 kpi-purple">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-bold text-uppercase">Assigned Sections</div>
+                    <h3 class="fw-bold text-dark mb-0">{{ class_sections.count }}</h3>
+                    <div class="small text-muted mt-1">Homeroom classes</div>
+                </div>
+                <div class="kpi-icon-bubble bg-purple-subtle text-primary">
+                    <i class="bi bi-diagram-3-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card p-3 kpi-info">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-bold text-uppercase">Teaching Papers</div>
+                    <h3 class="fw-bold text-dark mb-0">{{ subject_assignments.count }}</h3>
+                    <div class="small text-muted mt-1">Curriculum units</div>
+                </div>
+                <div class="kpi-icon-bubble bg-info-subtle text-info">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card p-3 kpi-success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-bold text-uppercase">Today's Roll Call</div>
+                    <h3 class="fw-bold text-success mb-0">Active</h3>
+                    <div class="small text-muted mt-1">{{ today|date:"M d, Y" }}</div>
+                </div>
+                <div class="kpi-icon-bubble bg-success-subtle text-success">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="kpi-card p-3 kpi-warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="text-muted small fw-bold text-uppercase">Evaluation Status</div>
+                    <h3 class="fw-bold text-warning mb-0">Gradebook</h3>
+                    <div class="small text-muted mt-1">Ready for input</div>
+                </div>
+                <div class="kpi-icon-bubble bg-warning-subtle text-warning">
+                    <i class="bi bi-pencil-square"></i>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -30,44 +101,50 @@
     <!-- Assigned Sections (Class Teacher Duties) -->
     <div class="col-lg-6">
         <div class="card card-premium h-100 overflow-hidden">
-            <div class="card-header card-header-clean d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="fw-bold mb-0">Class Teacher Responsibilities</h5>
-                    <span class="small text-muted">Primary classroom attendance and welfare</span>
+            <div class="card-header-clean bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-award-fill text-primary fs-5"></i>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Class Teacher Responsibilities</h5>
+                        <span class="small text-muted">Primary homeroom attendance compliance</span>
+                    </div>
                 </div>
-                <span class="badge badge-subtle-primary">{{ class_sections.count }} Section{{ class_sections.count|pluralize }}</span>
+                <span class="badge badge-subtle-primary rounded-pill px-3 py-1 font-monospace">
+                    {{ class_sections.count }} Section{{ class_sections.count|pluralize }}
+                </span>
             </div>
-            <div class="p-3">
+            <div class="card-body p-4">
                 <div class="d-flex flex-column gap-3">
                     {% for item in attendance_status_list %}
-                        <div class="p-3 border rounded-3 bg-white shadow-xs d-flex justify-content-between align-items-center">
+                        <div class="p-3 border rounded-3 bg-white shadow-xs d-flex flex-wrap justify-content-between align-items-center gap-2">
                             <div>
                                 <div class="d-flex align-items-center gap-2">
+                                    <span class="badge bg-primary text-white rounded-pill px-2 py-1 font-monospace" style="font-size: 0.72rem;">CLASS</span>
                                     <h6 class="fw-bold text-dark mb-0">{{ item.section }}</h6>
-                                    <span class="badge bg-light text-secondary border">
+                                    <span class="badge bg-light text-secondary border font-monospace small">
                                         {{ item.section.student_enrollments.count }} Students
                                     </span>
                                 </div>
                                 <div class="small text-muted mt-1">
-                                    Date: {{ today|date:"M d, Y" }}
+                                    <i class="bi bi-calendar3 me-1"></i>Date: <span class="font-monospace">{{ today|date:"M d, Y" }}</span>
                                 </div>
                             </div>
                             <div>
                                 {% if item.is_recorded %}
-                                    <span class="badge badge-subtle-success py-2 px-3 rounded-pill">
+                                    <span class="badge badge-subtle-success py-2 px-3 rounded-pill fw-bold">
                                         <i class="bi bi-check-circle-fill me-1"></i>Recorded Today
                                     </span>
                                 {% else %}
-                                    <a href="{% url 'attendance:record_attendance' %}?section={{ item.section.id }}" class="btn btn-primary-gradient btn-sm rounded-pill px-3">
-                                        Take Attendance
+                                    <a href="{% url 'attendance:record_attendance' %}?section={{ item.section.id }}" class="btn btn-primary-gradient btn-sm rounded-pill px-3 shadow-xs">
+                                        <i class="bi bi-calendar-check me-1"></i>Take Attendance
                                     </a>
                                 {% endif %}
                             </div>
                         </div>
                     {% empty %}
-                        <div class="text-center py-4 text-muted small">
-                            <i class="bi bi-info-circle fs-3 d-block mb-2"></i>
-                            No primary class teacher section assigned.
+                        <div class="text-center py-5 text-muted small">
+                            <i class="bi bi-info-circle fs-3 d-block mb-2 text-muted"></i>
+                            No primary class teacher section assigned to your profile.
                         </div>
                     {% endfor %}
                 </div>
@@ -78,35 +155,40 @@
     <!-- Assigned Subjects (Gradebook & Marks) -->
     <div class="col-lg-6">
         <div class="card card-premium h-100 overflow-hidden">
-            <div class="card-header card-header-clean d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 class="fw-bold mb-0">Teaching Curriculum & Gradebook</h5>
-                    <span class="small text-muted">Assigned subject papers for marks evaluation</span>
+            <div class="card-header-clean bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-journal-code text-info fs-5"></i>
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">Teaching Curriculum & Gradebook</h5>
+                        <span class="small text-muted">Assigned subject papers for marks evaluation</span>
+                    </div>
                 </div>
-                <span class="badge badge-subtle-success">{{ subject_assignments.count }} Paper{{ subject_assignments.count|pluralize }}</span>
+                <span class="badge badge-subtle-success rounded-pill px-3 py-1 font-monospace">
+                    {{ subject_assignments.count }} Paper{{ subject_assignments.count|pluralize }}
+                </span>
             </div>
-            <div class="p-3">
+            <div class="card-body p-4">
                 <div class="d-flex flex-column gap-3">
                     {% for assign in subject_assignments %}
-                        <div class="p-3 border rounded-3 bg-white shadow-xs d-flex justify-content-between align-items-center">
+                        <div class="p-3 border rounded-3 bg-white shadow-xs d-flex flex-wrap justify-content-between align-items-center gap-2">
                             <div>
                                 <div class="d-flex align-items-center gap-2">
                                     <h6 class="fw-bold text-dark mb-0">{{ assign.subject.name }}</h6>
-                                    <span class="badge badge-subtle-primary">{{ assign.subject.code }}</span>
+                                    <span class="badge bg-light text-dark border font-monospace small">{{ assign.subject.code }}</span>
                                 </div>
                                 <div class="small text-muted mt-1">
-                                    Class: <strong>{{ assign.section }}</strong>
+                                    Target Division: <strong class="text-secondary">{{ assign.section }}</strong>
                                 </div>
                             </div>
                             <div>
-                                <a href="{% url 'examinations:teacher_marks_entry' %}?section={{ assign.section.id }}&subject={{ assign.subject.id }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                                    <i class="bi bi-pencil-square me-1"></i>Enter Marks
+                                <a href="{% url 'examinations:teacher_marks_entry' %}?section={{ assign.section.id }}&subject={{ assign.subject.id }}" class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-xs">
+                                    <i class="bi bi-pencil-square me-1"></i>Open Gradebook
                                 </a>
                             </div>
                         </div>
                     {% empty %}
-                        <div class="text-center py-4 text-muted small">
-                            <i class="bi bi-journal-x fs-3 d-block mb-2"></i>
+                        <div class="text-center py-5 text-muted small">
+                            <i class="bi bi-journal-x fs-3 d-block mb-2 text-muted"></i>
                             No subject allocations assigned.
                         </div>
                     {% endfor %}

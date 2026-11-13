@@ -1,67 +1,150 @@
 {% extends 'base.html' %}
 
-{% block title %}Record Attendance | Algions SMS{% endblock %}
+{% block title %}Record Daily Attendance | School Management System{% endblock %}
+
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li><a href="{% url 'attendance:sessions_list' %}">Attendance Operations</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Daily Attendance Desk</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+<!-- Page Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-calendar-check-fill text-primary me-2"></i>Daily Attendance Roster</h2>
-        <p class="text-muted small mb-0">Record and verify daily classroom presence with database-level duplicate prevention.</p>
+        <h2 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
+            <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                <i class="bi bi-calendar2-check-fill fs-5"></i>
+            </span>
+            <span>Daily Classroom Attendance Desk</span>
+        </h2>
+        <p class="text-muted mb-0">Record and verify daily classroom presence with database-level duplicate prevention and ACID transaction safety.</p>
     </div>
-    {% if section %}
-        <span class="badge badge-subtle-primary px-3 py-2 rounded-pill">
-            <i class="bi bi-shield-lock-fill text-primary me-1"></i>Enforcing Assigned Class Scope
-        </span>
-    {% endif %}
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'attendance:sessions_list' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-xs">
+            <i class="bi bi-clock-history me-1"></i>Session Logs
+        </a>
+        <a href="{% url 'attendance:summary_report' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3 shadow-xs">
+            <i class="bi bi-bar-chart-fill me-1"></i>Analytics Report
+        </a>
+    </div>
 </div>
 
 <!-- Selection Filter Card -->
 <div class="card card-premium p-4 mb-4">
     <form method="get" class="row g-3 align-items-end">
         <div class="col-md-5">
-            <label class="form-label fw-semibold small text-uppercase text-secondary">Class & Section</label>
-            <select name="section" class="form-select" required onchange="this.form.submit()">
-                <option value="">-- Choose Assigned Class & Section --</option>
-                {% for s in available_sections %}
-                    <option value="{{ s.id }}" {% if selected_section_id == s.id|stringformat:"i" %}selected{% endif %}>
-                        {{ s }} (Grade {{ s.class_grade.name }})
-                    </option>
-                {% endfor %}
-            </select>
+            <label class="form-label fw-bold small text-uppercase text-secondary">Class & Section</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-diagram-3 text-primary"></i></span>
+                <select name="section" class="form-select border-start-0" required onchange="this.form.submit()">
+                    <option value="">-- Choose Assigned Class & Section --</option>
+                    {% for s in available_sections %}
+                        <option value="{{ s.id }}" {% if selected_section_id == s.id|stringformat:"i" %}selected{% endif %}>
+                            {{ s }} (Grade {{ s.class_grade.name }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
         <div class="col-md-4">
-            <label class="form-label fw-semibold small text-uppercase text-secondary">Session Date</label>
-            <input type="date" name="date" class="form-control" value="{{ attendance_date }}" required onchange="this.form.submit()">
+            <label class="form-label fw-bold small text-uppercase text-secondary">Session Date</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar3 text-muted"></i></span>
+                <input type="date" name="date" class="form-control border-start-0" value="{{ attendance_date }}" required onchange="this.form.submit()">
+            </div>
         </div>
         <div class="col-md-3">
-            <button type="submit" class="btn btn-outline-dark w-100 rounded-pill">
-                <i class="bi bi-arrow-repeat me-1"></i>Load Roster
+            <button type="submit" class="btn btn-primary-gradient w-100 rounded-pill">
+                <i class="bi bi-arrow-repeat me-1"></i>Fetch Roster
             </button>
         </div>
     </form>
 </div>
 
 {% if section %}
-    <form method="post" action="{% url 'attendance:record_attendance' %}">
+    <!-- Live Headcount Counter Bar -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+            <div class="kpi-card p-3 kpi-success">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Present</div>
+                        <h3 class="fw-bold text-success mb-0" id="livePresentCount">0</h3>
+                    </div>
+                    <div class="kpi-icon-bubble bg-success-subtle text-success">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card p-3 kpi-rose">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Absent</div>
+                        <h3 class="fw-bold text-danger mb-0" id="liveAbsentCount">0</h3>
+                    </div>
+                    <div class="kpi-icon-bubble bg-danger-subtle text-danger">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card p-3 kpi-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Late</div>
+                        <h3 class="fw-bold text-warning mb-0" id="liveLateCount">0</h3>
+                    </div>
+                    <div class="kpi-icon-bubble bg-warning-subtle text-warning">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="kpi-card p-3 kpi-info">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase">Live Attendance %</div>
+                        <h3 class="fw-bold text-info mb-0" id="liveRateDisplay">100%</h3>
+                    </div>
+                    <div class="kpi-icon-bubble bg-info-subtle text-info">
+                        <i class="bi bi-pie-chart-fill"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" action="{% url 'attendance:record_attendance' %}" id="attendanceForm">
         {% csrf_token %}
         <input type="hidden" name="section" value="{{ section.id }}">
         <input type="hidden" name="date" value="{{ attendance_date }}">
 
         <div class="card card-premium overflow-hidden mb-4">
-            <div class="p-3 bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="p-3 bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
-                    <h5 class="fw-bold mb-0">Roster for {{ section }} — <span class="text-primary">{{ attendance_date }}</span></h5>
-                    <span class="text-muted small">{{ enrollments.count }} enrolled students &bull; Auto-saving safely to unique session index</span>
+                    <h5 class="fw-bold mb-0">Roster: <span class="text-primary">{{ section }}</span> &bull; <span class="font-monospace text-secondary">{{ attendance_date }}</span></h5>
+                    <span class="text-muted small">{{ enrollments.count }} enrolled students &bull; Unique database constraint guarantees zero duplicates</span>
                 </div>
-                <div class="d-flex gap-2">
+                <div class="d-flex align-items-center gap-2">
                     <button type="button" class="btn btn-outline-success btn-sm rounded-pill px-3" onclick="markAll('PRESENT')">
                         <i class="bi bi-check-all me-1"></i>All Present
                     </button>
                     <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" onclick="markAll('ABSENT')">
                         <i class="bi bi-x-lg me-1"></i>All Absent
                     </button>
-                    <button type="submit" class="btn btn-primary-gradient btn-sm rounded-pill px-4">
-                        <i class="bi bi-save-fill me-1"></i>Commit Roster
+                    <button type="submit" class="btn btn-primary-gradient btn-sm rounded-pill px-4 shadow-xs">
+                        <i class="bi bi-cloud-arrow-up-fill me-1"></i>Commit Roster
                     </button>
                 </div>
             </div>
@@ -70,7 +153,7 @@
                 <table class="table table-modern align-middle mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 45px;">#</th>
+                            <th style="width: 50px;">#</th>
                             <th>Student Dossier</th>
                             <th style="width: 320px;">Presence Status</th>
                             <th>Session Remarks</th>
@@ -79,28 +162,32 @@
                     <tbody>
                         {% for enrollment in enrollments %}
                             {% with student=enrollment.student %}
-                            <tr>
-                                <td class="text-muted small">{{ forloop.counter }}</td>
+                            <tr class="attendance-row">
+                                <td class="text-muted small font-monospace">{{ forloop.counter }}</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs" 
-                                             style="width: 32px; height: 32px; background: #6366f1; font-size: 0.8rem;">
+                                             style="width: 36px; height: 36px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); font-size: 0.85rem;">
                                             {{ student.user.first_name|first }}
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">{{ student.user.get_full_name|default:student.user.username }}</div>
-                                            <span class="text-muted small font-monospace">{{ student.admission_number }}</span>
+                                            <span class="badge bg-light text-secondary border font-monospace copy-badge py-0 px-1 small"
+                                                  onclick="copyToClipboard('{{ student.admission_number }}', 'Admission No')">
+                                                {{ student.admission_number }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group w-100" role="group">
                                         {% for val, label in status_choices %}
-                                            <input type="radio" class="btn-check status-radio-{{ val }}" 
+                                            <input type="radio" class="btn-check status-radio status-radio-{{ val }}" 
                                                 name="status_{{ student.id }}" 
                                                 id="status_{{ student.id }}_{{ val }}" 
                                                 value="{{ val }}" 
                                                 autocomplete="off"
+                                                onchange="updateHeadcountMetrics()"
                                                 {% if existing_records %}
                                                     {% for s_id, s_status in existing_records.items %}
                                                         {% if s_id == student.id and s_status == val %}checked{% endif %}
@@ -116,38 +203,80 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <input type="text" name="remarks_{{ student.id }}" class="form-control form-control-sm" placeholder="Observation notes">
+                                    <input type="text" name="remarks_{{ student.id }}" class="form-control form-control-sm rounded-pill px-3" placeholder="Observation / note">
                                 </td>
                             </tr>
                             {% endwith %}
                         {% empty %}
                             <tr>
                                 <td colspan="4" class="text-center py-5 text-muted">
-                                    No students enrolled in this section.
+                                    <i class="bi bi-people fs-2 d-block mb-2 text-muted"></i>
+                                    No students are enrolled in this section.
                                 </td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
-
-            {% if enrollments %}
-                <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
-                    <span class="small text-muted"><i class="bi bi-shield-check text-success me-1"></i>Database integrity verified: Duplicate records safely updated without collision.</span>
-                    <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill">
-                        <i class="bi bi-save-fill me-1"></i>Save Attendance Records
-                    </button>
-                </div>
-            {% endif %}
+            
+            <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
+                <span class="text-muted small">
+                    <i class="bi bi-shield-check text-success me-1"></i>Transactions are committed atomically via <code>transaction.atomic()</code>
+                </span>
+                <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill">
+                    <i class="bi bi-check2-circle me-1"></i>Save Attendance Records
+                </button>
+            </div>
         </div>
     </form>
+{% else %}
+    <div class="empty-state-box">
+        <div class="empty-state-icon">
+            <i class="bi bi-calendar2-range"></i>
+        </div>
+        <h4 class="fw-bold mb-2">Select a Class & Section to Begin</h4>
+        <p class="text-muted mx-auto mb-3" style="max-width: 480px;">
+            Choose a classroom division from the selector above to load the student headcount registry and mark daily attendance.
+        </p>
+    </div>
 {% endif %}
+{% endblock %}
 
+{% block extra_js %}
 <script>
-    function markAll(status) {
-        document.querySelectorAll('.status-radio-' + status).forEach(function(radio) {
-            radio.checked = true;
+    function updateHeadcountMetrics() {
+        const radios = document.querySelectorAll('.status-radio:checked');
+        let present = 0, absent = 0, late = 0, excused = 0;
+        
+        radios.forEach(r => {
+            if (r.value === 'PRESENT') present++;
+            else if (r.value === 'ABSENT') absent++;
+            else if (r.value === 'LATE') late++;
+            else if (r.value === 'EXCUSED') excused++;
         });
+
+        const total = present + absent + late + excused;
+        const rate = total > 0 ? Math.round(((present + late) / total) * 100) : 0;
+
+        const pEl = document.getElementById('livePresentCount');
+        const aEl = document.getElementById('liveAbsentCount');
+        const lEl = document.getElementById('liveLateCount');
+        const rEl = document.getElementById('liveRateDisplay');
+
+        if (pEl) pEl.textContent = present;
+        if (aEl) aEl.textContent = absent;
+        if (lEl) lEl.textContent = late;
+        if (rEl) rEl.textContent = rate + '%';
     }
+
+    function markAll(status) {
+        document.querySelectorAll(`.status-radio-${status}`).forEach(el => {
+            el.checked = true;
+        });
+        updateHeadcountMetrics();
+        showToast(`All students marked as <strong>${status}</strong>`, 'info');
+    }
+
+    document.addEventListener('DOMContentLoaded', updateHeadcountMetrics);
 </script>
 {% endblock %}

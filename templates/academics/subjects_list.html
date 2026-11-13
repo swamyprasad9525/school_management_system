@@ -1,41 +1,103 @@
 {% extends 'base.html' %}
 
-{% block title %}Subjects & Curriculum | School Management System{% endblock %}
+{% block title %}Curriculum & Faculty Allocations | School Management System{% endblock %}
+
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li><a href="{% url 'core:admin_dashboard' %}">Academic Administration</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Curriculum & Faculty Allocations</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<!-- Page Header -->
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-book text-primary me-2"></i>Subjects & Teacher Allocations</h2>
-        <p class="text-muted mb-0">List of course subjects and their assigned subject teachers per section.</p>
+        <h2 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
+            <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
+                <i class="bi bi-journal-bookmark-fill fs-5"></i>
+            </span>
+            <span>Curriculum & Faculty Allocations</span>
+        </h2>
+        <p class="text-muted mb-0">Master catalog of accredited subjects and per-section teacher assignments.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'academics:teachers_list' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-xs">
+            <i class="bi bi-person-badge me-1"></i>Faculty Directory
+        </a>
+        <a href="{% url 'examinations:teacher_marks_entry' %}" class="btn btn-primary-gradient btn-sm px-4 rounded-pill">
+            <i class="bi bi-pencil-square me-1"></i>Evaluation Gradebook &rarr;
+        </a>
+    </div>
+</div>
+
+<!-- Search Filter Bar -->
+<div class="filter-toolbar">
+    <div class="search-box-modern">
+        <i class="bi bi-search"></i>
+        <input type="text" id="curriculumSearch" placeholder="Search by subject code, subject title, teacher, or section...">
+    </div>
+    <div class="d-flex align-items-center gap-3">
+        <span class="badge badge-subtle-primary px-3 py-2 rounded-pill font-monospace">
+            {{ subjects.count }} Accredited Subjects
+        </span>
+        <span class="badge badge-subtle-info px-3 py-2 rounded-pill font-monospace">
+            {{ assignments.count }} Active Allocations
+        </span>
     </div>
 </div>
 
 <div class="row g-4">
+    <!-- Left Column: Master Subject Catalog -->
     <div class="col-lg-5">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 border-bottom">
-                <h5 class="fw-bold mb-0">Master Subject Catalog</h5>
+        <div class="card card-premium h-100">
+            <div class="card-header-clean bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-journal-check text-primary fs-5"></i>
+                    <h5 class="fw-bold mb-0">Subject Course Catalog</h5>
+                </div>
+                <span class="badge bg-white text-secondary border shadow-xs rounded-pill px-2 py-1 small">
+                    {{ subjects.count }} Courses
+                </span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
+                    <table class="table table-modern align-middle mb-0" id="subjectsCatalogTable">
+                        <thead>
                             <tr>
-                                <th>Code</th>
-                                <th>Subject Name</th>
-                                <th>Description</th>
+                                <th>Subject Code</th>
+                                <th>Course Title</th>
+                                <th>Type</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for subject in subjects %}
-                                <tr>
-                                    <td><span class="badge bg-secondary-subtle text-secondary border">{{ subject.code }}</span></td>
-                                    <td class="fw-semibold">{{ subject.name }}</td>
-                                    <td class="small text-muted">{{ subject.description|default:"Core curriculum subject" }}</td>
+                                <tr class="subject-row">
+                                    <td>
+                                        <span class="badge bg-light text-dark border font-monospace copy-badge py-1 px-2" 
+                                              title="Click to copy code" 
+                                              onclick="copyToClipboard('{{ subject.code }}', 'Subject Code')">
+                                            {{ subject.code }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">{{ subject.name }}</div>
+                                        <div class="text-muted small">{{ subject.description|default:"Core curriculum course unit" }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-subtle-primary rounded-pill px-2 py-1 small">
+                                            Core
+                                        </span>
+                                    </td>
                                 </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted">No subjects found.</td>
+                                    <td colspan="3" class="text-center py-4 text-muted">No course units registered.</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -45,38 +107,68 @@
         </div>
     </div>
 
+    <!-- Right Column: Section Allocations -->
     <div class="col-lg-7">
-        <div class="card shadow-sm border-0">
-            <div class="card-header bg-white py-3 border-bottom">
-                <h5 class="fw-bold mb-0">Class & Section Subject Allocations</h5>
+        <div class="card card-premium h-100">
+            <div class="card-header-clean bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-lines-fill text-info fs-5"></i>
+                    <h5 class="fw-bold mb-0">Class & Section Faculty Assignments</h5>
+                </div>
+                <span class="badge badge-subtle-success rounded-pill px-3 py-1 small">
+                    Active Term
+                </span>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light">
+                    <table class="table table-modern align-middle mb-0" id="allocationsTable">
+                        <thead>
                             <tr>
-                                <th>Class & Section</th>
+                                <th>Grade & Section</th>
                                 <th>Subject</th>
                                 <th>Assigned Teacher</th>
+                                <th class="text-end">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for assign in assignments %}
-                                <tr>
-                                    <td class="fw-semibold">{{ assign.section }}</td>
+                                <tr class="allocation-row">
                                     <td>
-                                        <span class="badge bg-info-subtle text-info-emphasis border border-info-subtle">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge bg-primary text-white rounded-pill px-2 py-1 font-monospace" style="font-size: 0.72rem;">
+                                                DIV
+                                            </span>
+                                            <span class="fw-bold text-dark">{{ assign.section }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-subtle-info rounded-pill px-2 py-1 fw-semibold">
                                             {{ assign.subject.name }}
                                         </span>
                                     </td>
                                     <td>
-                                        <i class="bi bi-person-badge text-primary me-1"></i>
-                                        {{ assign.teacher.user.get_full_name|default:assign.teacher.user.username }}
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center text-primary fw-bold" 
+                                                 style="width: 28px; height: 28px; font-size: 0.75rem;">
+                                                {{ assign.teacher.user.first_name|first|default:"T" }}
+                                            </div>
+                                            <span class="fw-semibold text-secondary">
+                                                {{ assign.teacher.user.get_full_name|default:assign.teacher.user.username }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'examinations:teacher_marks_entry' %}" class="btn btn-light btn-sm rounded-pill border shadow-xs" title="Enter Marks">
+                                            <i class="bi bi-pencil-square text-primary"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             {% empty %}
                                 <tr>
-                                    <td colspan="3" class="text-center py-4 text-muted">No subject assignments registered yet.</td>
+                                    <td colspan="4" class="text-center py-5 text-muted">
+                                        <i class="bi bi-info-circle fs-3 d-block mb-2 text-muted"></i>
+                                        No active section subject allocations found.
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -88,3 +180,24 @@
 </div>
 {% endblock %}
 
+{% block extra_js %}
+<script>
+    // Live filter across catalog and allocations
+    const searchInput = document.getElementById('curriculumSearch');
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            // Filter subject rows
+            document.querySelectorAll('.subject-row').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+            
+            // Filter allocation rows
+            document.querySelectorAll('.allocation-row').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        });
+    }
+</script>
+{% endblock %}

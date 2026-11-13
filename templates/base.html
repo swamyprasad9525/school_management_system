@@ -4,206 +4,492 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Algions SMS | Enterprise School Management{% endblock %}</title>
-    <!-- Google Fonts -->
+    <title>{% block title %}Algions SMS | Enterprise School Operations{% endblock %}</title>
+    <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Chart.js CDN for Interactive Data Visualizations -->
+    <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-    <!-- Custom CSS -->
+    <!-- Custom Enterprise CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         @media print {
-            .navbar, .footer, .btn, .no-print, .alert, .persona-pill {
+            .app-sidebar, .app-topbar, .footer, .btn, .no-print, .alert, .persona-pill, .toast-container-custom, .modal {
                 display: none !important;
             }
+            .app-main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
             body {
-                background-color: #fff !important;
+                background: #fff !important;
                 color: #000 !important;
             }
-            .card {
-                border: 1px solid #ddd !important;
+            .card-premium, .certificate-frame, .receipt-voucher {
+                border: 1px solid #ccc !important;
                 box-shadow: none !important;
             }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="d-flex flex-column min-vh-100">
-    <!-- Glassmorphic Global Topbar -->
-    <header class="navbar navbar-expand-lg navbar-dark navbar-glass sticky-top shadow-sm py-2">
-        <div class="container-fluid px-lg-4">
-            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'core:home' %}">
-                <div class="navbar-brand-logo">
-                    <i class="bi bi-mortarboard-fill"></i>
-                </div>
-                <div>
-                    <span class="fs-5 tracking-tight text-white">Algions</span>
-                    <span class="badge bg-primary text-white border border-primary-subtle px-1 py-0 ms-1" style="font-size: 0.65rem;">PRO</span>
-                </div>
-            </a>
-            
-            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <i class="bi bi-list fs-3 text-light"></i>
-            </button>
+<body>
+    <!-- Global Floating Toast Container -->
+    <div class="toast-container-custom" id="toastContainer"></div>
 
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:home' %}"><i class="bi bi-grid me-1"></i>Overview</a>
-                    </li>
-                    {% if user.is_authenticated %}
-                        {% if user.is_admin_role %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:admin_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Command Center</a>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-book me-1"></i>Academics
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
-                                    <li><a class="dropdown-item" href="{% url 'academics:classes_list' %}"><i class="bi bi-diagram-3 me-2 text-primary"></i>Classes & Sections</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'academics:subjects_list' %}"><i class="bi bi-journal-bookmark me-2 text-info"></i>Subjects & Faculty</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'academics:teachers_list' %}"><i class="bi bi-person-badge me-2 text-warning"></i>Teachers Directory</a></li>
-                                    <li><hr class="dropdown-divider border-secondary"></li>
-                                    <li><a class="dropdown-item" href="{% url 'academics:students_list' %}"><i class="bi bi-person-lines-fill me-2 text-success"></i>Students Roster</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-calendar2-check me-1"></i>Attendance
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
-                                    <li><a class="dropdown-item" href="{% url 'attendance:sessions_list' %}"><i class="bi bi-clock-history me-2 text-primary"></i>Daily Sessions</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'attendance:record_attendance' %}"><i class="bi bi-plus-circle me-2 text-success"></i>Take Attendance</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'attendance:summary_report' %}"><i class="bi bi-bar-chart me-2 text-info"></i>Class Analytics</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-award me-1"></i>Assessments
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
-                                    <li><a class="dropdown-item" href="{% url 'examinations:exams_list' %}"><i class="bi bi-file-earmark-text me-2 text-primary"></i>Exams Schedule</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'examinations:grading_scales' %}"><i class="bi bi-sliders me-2 text-warning"></i>Grading Thresholds</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-wallet2 me-1"></i>Finance
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
-                                    <li><a class="dropdown-item" href="{% url 'finance:invoices_list' %}"><i class="bi bi-receipt me-2 text-primary"></i>Billing Invoices</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'finance:fee_structures' %}"><i class="bi bi-layers me-2 text-info"></i>Fee Structures</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'finance:ledger_report' %}"><i class="bi bi-journal-check me-2 text-success"></i>Reconcile Ledger</a></li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'audit:logs_list' %}"><i class="bi bi-shield-check me-1"></i>Audit Trail</a>
-                            </li>
-                        {% elif user.is_teacher_role %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:teacher_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Faculty Portal</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'attendance:record_attendance' %}"><i class="bi bi-calendar2-check me-1"></i>Record Attendance</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'examinations:teacher_marks_entry' %}"><i class="bi bi-pencil-square me-1"></i>Marks Entry</a>
-                            </li>
-                        {% elif user.is_guardian_role or user.is_student_role %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:guardian_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Guardian Portal</a>
-                            </li>
-                        {% endif %}
-                    {% endif %}
-                    
-                    <!-- Reviewer Demo Persona Switcher Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-warning fw-semibold persona-pill" href="#" role="button" data-bs-toggle="dropdown">
-                            <span class="pulse-indicator me-1"></span>Persona Switcher
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-dark shadow border-warning">
-                            <li class="dropdown-header text-uppercase small text-muted">Evaluation Quick-Switch</li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:demo_switch' 'admin' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Admin (Full Control)</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:demo_switch' 'teacher' %}"><i class="bi bi-person-badge me-2 text-primary"></i>Teacher 1 (Class 10-A)</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:demo_switch' 'guardian' %}"><i class="bi bi-people me-2 text-success"></i>Guardian 1 (Alice's Parent)</a></li>
-                            <li><a class="dropdown-item" href="{% url 'accounts:demo_switch' 'student' %}"><i class="bi bi-mortarboard me-2 text-info"></i>Student 1 (Alice)</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-info" href="/api/docs/" target="_blank"><i class="bi bi-code-slash me-1"></i>Swagger Docs</a>
-                    </li>
-                </ul>
-
-                <!-- User Profile & Action Menu -->
-                <div class="d-flex align-items-center gap-3">
-                    {% if user.is_authenticated %}
-                        <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
-                                 style="width: 34px; height: 34px; background: {% if user.is_admin_role %}#ef4444{% elif user.is_teacher_role %}#6366f1{% else %}#10b981{% endif %}; font-size: 0.85rem;">
-                                {{ user.first_name|first|default:user.username|first|upper }}
+    <div class="app-container">
+        {% if user.is_authenticated %}
+            <!-- Collapsible Obsidian Sidebar -->
+            <aside class="app-sidebar shadow-lg" id="appSidebar">
+                <div class="sidebar-header">
+                    <a href="{% url 'core:home' %}" class="d-flex align-items-center gap-2 text-decoration-none">
+                        <div class="sidebar-logo-icon">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <div>
+                            <div class="d-flex align-items-center gap-1">
+                                <span class="fs-5 fw-bold text-white tracking-tight">Algions</span>
+                                <span class="badge bg-primary text-white border border-primary-subtle px-1 py-0" style="font-size: 0.65rem;">SMS</span>
                             </div>
-                            <div class="d-none d-md-block text-start">
-                                <div class="text-white fw-semibold small" style="line-height: 1.1;">{{ user.get_full_name|default:user.username }}</div>
-                                <span class="badge {% if user.is_admin_role %}bg-danger{% elif user.is_teacher_role %}bg-primary{% else %}bg-success{% endif %}" style="font-size: 0.65rem;">
-                                    {{ user.get_role_display }}
-                                </span>
+                            <div class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.05em;">ENTERPRISE SUITE</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="sidebar-nav">
+                    <div class="sidebar-section-title">Navigation Hub</div>
+                    <a href="{% url 'core:home' %}" class="sidebar-link {% if request.path == '/' %}active{% endif %}">
+                        <i class="bi bi-grid-fill"></i>
+                        <span>Overview</span>
+                    </a>
+
+                    {% if user.is_admin_role %}
+                        <a href="{% url 'core:admin_dashboard' %}" class="sidebar-link {% if 'dashboard/admin' in request.path %}active{% endif %}">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Command Center</span>
+                        </a>
+
+                        <div class="sidebar-section-title">Academic Administration</div>
+                        <a href="{% url 'academics:classes_list' %}" class="sidebar-link {% if 'classes' in request.path %}active{% endif %}">
+                            <i class="bi bi-diagram-3-fill"></i>
+                            <span>Classes & Sections</span>
+                        </a>
+                        <a href="{% url 'academics:subjects_list' %}" class="sidebar-link {% if 'subjects' in request.path %}active{% endif %}">
+                            <i class="bi bi-journal-bookmark-fill"></i>
+                            <span>Curriculum & Faculty</span>
+                        </a>
+                        <a href="{% url 'academics:teachers_list' %}" class="sidebar-link {% if 'teachers' in request.path %}active{% endif %}">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <span>Teachers Directory</span>
+                        </a>
+                        <a href="{% url 'academics:students_list' %}" class="sidebar-link {% if 'students' in request.path and not 'detail' in request.path %}active{% endif %}">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Students Roster</span>
+                        </a>
+
+                        <div class="sidebar-section-title">Operations & Assessments</div>
+                        <a href="{% url 'attendance:sessions_list' %}" class="sidebar-link {% if 'attendance/sessions' in request.path %}active{% endif %}">
+                            <i class="bi bi-clock-history"></i>
+                            <span>Attendance Sessions</span>
+                        </a>
+                        <a href="{% url 'attendance:summary_report' %}" class="sidebar-link {% if 'attendance/summary' in request.path %}active{% endif %}">
+                            <i class="bi bi-bar-chart-fill"></i>
+                            <span>Attendance Analytics</span>
+                        </a>
+                        <a href="{% url 'examinations:exams_list' %}" class="sidebar-link {% if 'examinations/exams' in request.path %}active{% endif %}">
+                            <i class="bi bi-file-earmark-text-fill"></i>
+                            <span>Exams & Assessments</span>
+                        </a>
+                        <a href="{% url 'examinations:grading_scales' %}" class="sidebar-link {% if 'grading-scales' in request.path %}active{% endif %}">
+                            <i class="bi bi-sliders"></i>
+                            <span>Grading Thresholds</span>
+                        </a>
+
+                        <div class="sidebar-section-title">Finance & Governance</div>
+                        <a href="{% url 'finance:invoices_list' %}" class="sidebar-link {% if 'invoices' in request.path %}active{% endif %}">
+                            <i class="bi bi-receipt-cutoff"></i>
+                            <span>Billing Statements</span>
+                        </a>
+                        <a href="{% url 'finance:ledger_report' %}" class="sidebar-link {% if 'ledger' in request.path %}active{% endif %}">
+                            <i class="bi bi-journal-check"></i>
+                            <span>Reconciliation Ledger</span>
+                        </a>
+                        <a href="{% url 'audit:logs_list' %}" class="sidebar-link {% if 'audit' in request.path %}active{% endif %}">
+                            <i class="bi bi-shield-check"></i>
+                            <span>System Audit Trail</span>
+                        </a>
+
+                    {% elif user.is_teacher_role %}
+                        <a href="{% url 'core:teacher_dashboard' %}" class="sidebar-link {% if 'teacher' in request.path %}active{% endif %}">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Faculty Workspace</span>
+                        </a>
+                        <a href="{% url 'attendance:record_attendance' %}" class="sidebar-link {% if 'record' in request.path %}active{% endif %}">
+                            <i class="bi bi-calendar2-check-fill"></i>
+                            <span>Record Attendance</span>
+                        </a>
+                        <a href="{% url 'examinations:teacher_marks_entry' %}" class="sidebar-link {% if 'marks-entry' in request.path %}active{% endif %}">
+                            <i class="bi bi-pencil-square"></i>
+                            <span>Evaluation Gradebook</span>
+                        </a>
+                        <a href="{% url 'academics:students_list' %}" class="sidebar-link">
+                            <i class="bi bi-person-lines-fill"></i>
+                            <span>Assigned Students</span>
+                        </a>
+
+                    {% elif user.is_guardian_role or user.is_student_role %}
+                        <a href="{% url 'core:guardian_dashboard' %}" class="sidebar-link active">
+                            <i class="bi bi-speedometer2"></i>
+                            <span>Family Portal</span>
+                        </a>
+                        <a href="{% url 'finance:invoices_list' %}" class="sidebar-link">
+                            <i class="bi bi-receipt"></i>
+                            <span>Fee Statements</span>
+                        </a>
+                    {% endif %}
+
+                    <div class="sidebar-section-title">Developer & APIs</div>
+                    <a href="/api/docs/" target="_blank" class="sidebar-link">
+                        <i class="bi bi-code-slash text-info"></i>
+                        <span>Swagger 3.0 Docs</span>
+                    </a>
+                </div>
+
+                <div class="sidebar-footer">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs position-relative" 
+                                 style="width: 36px; height: 36px; background: {% if user.is_admin_role %}#ef4444{% elif user.is_teacher_role %}#6366f1{% else %}#10b981{% endif %}; font-size: 0.85rem;">
+                                {{ user.first_name|first|default:user.username|first|upper }}
+                                <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle" style="width: 10px; height: 10px;"></span>
+                            </div>
+                            <div class="text-truncate" style="max-width: 120px;">
+                                <div class="text-white small fw-bold text-truncate">{{ user.get_full_name|default:user.username }}</div>
+                                <div class="text-white-50" style="font-size: 0.68rem;">{{ user.get_role_display }}</div>
                             </div>
                         </div>
-                        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light btn-sm px-3 rounded-pill">
+                        <a href="{% url 'accounts:logout' %}" class="text-secondary text-hover-white p-1" title="Sign Out">
+                            <i class="bi bi-box-arrow-right fs-5"></i>
+                        </a>
+                    </div>
+                </div>
+            </aside>
+        {% endif %}
+
+        <!-- Main Workspace Area -->
+        <div class="app-main {% if not user.is_authenticated %}m-0{% endif %}">
+            <!-- Modern Topbar -->
+            <header class="app-topbar">
+                <div class="d-flex align-items-center gap-3">
+                    {% if user.is_authenticated %}
+                        <button class="btn btn-light d-lg-none p-1 border" type="button" onclick="document.getElementById('appSidebar').classList.toggle('show')">
+                            <i class="bi bi-list fs-4"></i>
+                        </button>
+                    {% else %}
+                        <a class="navbar-brand fw-bold d-flex align-items-center gap-2 text-decoration-none" href="{% url 'core:home' %}">
+                            <div class="sidebar-logo-icon" style="width: 34px; height: 34px;">
+                                <i class="bi bi-mortarboard-fill fs-6"></i>
+                            </div>
+                            <span class="fs-5 fw-bold text-dark tracking-tight">Algions SMS</span>
+                        </a>
+                    {% endif %}
+
+                    <!-- Global Command Palette Search Trigger -->
+                    <div class="search-trigger" onclick="openCommandPalette()">
+                        <i class="bi bi-search text-muted"></i>
+                        <span>Search student, action, page...</span>
+                        <span class="search-shortcut-badge ms-auto">Ctrl + K</span>
+                    </div>
+
+                    <!-- Live School Clock Widget -->
+                    <div id="liveClock" class="d-none d-xl-flex align-items-center gap-2 text-muted small fw-semibold font-monospace bg-light px-3 py-1 rounded-pill border">
+                        <i class="bi bi-clock-history text-primary"></i>
+                        <span id="currentTimeDisplay">--:--:--</span>
+                    </div>
+                </div>
+
+                <!-- Right Side Actions & Persona Switcher -->
+                <div class="d-flex align-items-center gap-3">
+                    <!-- Keyboard Shortcuts Quick Trigger -->
+                    <button class="btn btn-light btn-sm rounded-circle border p-0 d-flex align-items-center justify-content-center" 
+                            style="width: 32px; height: 32px;" 
+                            title="Keyboard Shortcuts (?)" 
+                            onclick="openShortcutsModal()">
+                        <i class="bi bi-keyboard text-muted"></i>
+                    </button>
+
+                    <!-- Interactive Persona Switcher Pill -->
+                    <div class="dropdown">
+                        <button class="btn btn-outline-dark btn-sm rounded-pill px-3 dropdown-toggle d-flex align-items-center gap-2 shadow-xs" type="button" data-bs-toggle="dropdown">
+                            <span class="pulse-indicator"></span>
+                            <span class="small fw-semibold">Switch Persona</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="border-radius: 12px; min-width: 230px;">
+                            <li class="dropdown-header text-uppercase small text-muted">Instant Evaluation Switch</li>
+                            <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'admin' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Admin (Arthur)</a></li>
+                            <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'teacher' %}"><i class="bi bi-person-badge me-2 text-primary"></i>Teacher 1 (Sarah)</a></li>
+                            <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'guardian' %}"><i class="bi bi-people me-2 text-success"></i>Guardian 1 (Robert)</a></li>
+                            <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'student' %}"><i class="bi bi-mortarboard me-2 text-info"></i>Student 1 (Alice)</a></li>
+                        </ul>
+                    </div>
+
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'accounts:logout' %}" class="btn btn-light btn-sm rounded-pill px-3 border shadow-xs">
                             <i class="bi bi-box-arrow-right me-1"></i>Sign Out
                         </a>
                     {% else %}
                         <a href="{% url 'accounts:login' %}" class="btn btn-primary-gradient btn-sm px-4 rounded-pill">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
+                            Sign In &rarr;
                         </a>
                     {% endif %}
                 </div>
-            </div>
-        </div>
-    </header>
+            </header>
 
-    <!-- Main Dynamic Content Wrapper -->
-    <main class="flex-grow-1 container-fluid px-lg-4 py-4 animate-fade-in">
-        {% if messages %}
-            <div class="row mb-3">
-                <div class="col-12">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2 rounded-3" role="alert">
-                            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success{% elif message.tags == 'error' %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-primary{% endif %} fs-5"></i>
-                            <div class="flex-grow-1">{{ message }}</div>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <!-- Page Body Content -->
+            <div class="p-4 flex-grow-1">
+                <!-- Breadcrumbs row -->
+                {% block breadcrumb %}{% endblock %}
+
+                {% if messages %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-xs border-0 d-flex align-items-center gap-2 rounded-3" role="alert">
+                                    <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success{% elif message.tags == 'error' %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-primary{% endif %} fs-5"></i>
+                                    <div class="flex-grow-1">{{ message }}</div>
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                    </div>
+                {% endif %}
+
+                {% block content %}{% endblock %}
+            </div>
+
+            <!-- Modern Footer -->
+            <footer class="footer mt-auto py-3 bg-white border-top text-muted small px-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                        &copy; {% now "Y" %} <strong>Algions AI Labs</strong> &bull; School Management System (Advanced Monolith)
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-light text-secondary border"><i class="bi bi-shield-check text-success me-1"></i>Server RBAC</span>
+                        <span class="badge bg-light text-secondary border"><i class="bi bi-database-check text-primary me-1"></i>ACID Ledgers</span>
+                        <span class="badge bg-light text-secondary border"><i class="bi bi-journal-code text-info me-1"></i>OpenAPI 3.0</span>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Spotlight Command Palette Modal (Ctrl + K) -->
+    <div class="modal fade command-palette-modal" id="commandPaletteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 640px;">
+            <div class="modal-content shadow-lg">
+                <div class="command-input-wrapper">
+                    <i class="bi bi-search fs-5 text-muted"></i>
+                    <input type="text" class="command-input" id="commandInput" placeholder="Type a command or jump to page..." autofocus>
+                    <span class="badge bg-light text-dark border font-monospace small">ESC</span>
+                </div>
+                <div class="command-list" id="commandList">
+                    <div class="px-3 py-2 small text-uppercase fw-bold text-muted" style="font-size: 0.7rem;">Quick Navigation</div>
+                    <a href="{% url 'core:home' %}" class="command-item">
+                        <span><i class="bi bi-grid-fill text-primary me-2"></i>System Overview & Evaluation Hub</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Home</span>
+                    </a>
+                    <a href="{% url 'core:admin_dashboard' %}" class="command-item">
+                        <span><i class="bi bi-speedometer2 text-danger me-2"></i>Admin Command Center</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Admin</span>
+                    </a>
+                    <a href="{% url 'academics:classes_list' %}" class="command-item">
+                        <span><i class="bi bi-diagram-3-fill text-primary me-2"></i>Classes & Sections Matrix</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Classes</span>
+                    </a>
+                    <a href="{% url 'academics:students_list' %}" class="command-item">
+                        <span><i class="bi bi-people-fill text-primary me-2"></i>Students Roster Directory</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Students</span>
+                    </a>
+                    <a href="{% url 'attendance:record_attendance' %}" class="command-item">
+                        <span><i class="bi bi-calendar2-check-fill text-success me-2"></i>Record Daily Attendance</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Attendance</span>
+                    </a>
+                    <a href="{% url 'attendance:summary_report' %}" class="command-item">
+                        <span><i class="bi bi-bar-chart-fill text-success me-2"></i>Attendance Analytics & Summaries</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Analytics</span>
+                    </a>
+                    <a href="{% url 'examinations:teacher_marks_entry' %}" class="command-item">
+                        <span><i class="bi bi-pencil-square text-warning me-2"></i>Evaluation Gradebook (Marks Entry)</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Exams</span>
+                    </a>
+                    <a href="{% url 'finance:invoices_list' %}" class="command-item">
+                        <span><i class="bi bi-receipt-cutoff text-info me-2"></i>Billing & Fee Statements</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Billing</span>
+                    </a>
+                    <a href="{% url 'finance:ledger_report' %}" class="command-item">
+                        <span><i class="bi bi-journal-check text-info me-2"></i>Fee Ledger Reconciliation Report</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Finance</span>
+                    </a>
+                    <a href="{% url 'audit:logs_list' %}" class="command-item">
+                        <span><i class="bi bi-shield-check text-secondary me-2"></i>System Security Audit Trail</span>
+                        <span class="badge bg-light text-dark border small font-monospace">Audit</span>
+                    </a>
+                    <div class="px-3 py-2 mt-2 small text-uppercase fw-bold text-muted border-top" style="font-size: 0.7rem;">Instant Switch Personas</div>
+                    <a href="{% url 'accounts:demo_switch' 'admin' %}" class="command-item">
+                        <span><i class="bi bi-shield-lock me-2 text-danger"></i>Switch to Admin (Arthur Pendleton)</span>
+                    </a>
+                    <a href="{% url 'accounts:demo_switch' 'teacher' %}" class="command-item">
+                        <span><i class="bi bi-person-badge me-2 text-primary"></i>Switch to Teacher 1 (Sarah Jenkins)</span>
+                    </a>
+                    <a href="{% url 'accounts:demo_switch' 'guardian' %}" class="command-item">
+                        <span><i class="bi bi-people me-2 text-success"></i>Switch to Guardian 1 (Robert Taylor)</span>
+                    </a>
+                    <a href="{% url 'accounts:demo_switch' 'student' %}" class="command-item">
+                        <span><i class="bi bi-mortarboard me-2 text-info"></i>Switch to Student 1 (Alice Taylor)</span>
+                    </a>
                 </div>
             </div>
-        {% endif %}
+        </div>
+    </div>
 
-        {% block content %}{% endblock %}
-    </main>
-
-    <!-- Professional Enterprise Footer -->
-    <footer class="footer mt-auto py-3 bg-white border-top text-muted small">
-        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
-            <div>
-                &copy; {% now "Y" %} <strong>Algions AI Labs</strong> &bull; School Management System (Enterprise Monolith)
-            </div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-secondary border"><i class="bi bi-shield-check text-success me-1"></i>Server RBAC</span>
-                <span class="badge bg-light text-secondary border"><i class="bi bi-database-check text-primary me-1"></i>ACID Transactions</span>
-                <span class="badge bg-light text-secondary border"><i class="bi bi-journal-code text-info me-1"></i>OpenAPI 3.0</span>
+    <!-- Keyboard Shortcuts Modal -->
+    <div class="modal fade" id="shortcutsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content shadow-lg border-0" style="border-radius: var(--radius-lg);">
+                <div class="modal-header border-bottom">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-keyboard text-primary me-2"></i>Keyboard Shortcuts</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-body fw-medium">Open Command Palette</span>
+                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">Ctrl + K</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-body fw-medium">Open Shortcuts Dialog</span>
+                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">?</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-body fw-medium">Print Report Card / Receipt</span>
+                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">Ctrl + P</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-body fw-medium">Close Modal</span>
+                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">ESC</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </footer>
+    </div>
 
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Global Application Scripts -->
+    <script>
+        // Live Clock
+        function updateLiveClock() {
+            const clockEl = document.getElementById('currentTimeDisplay');
+            if (clockEl) {
+                const now = new Date();
+                clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            }
+        }
+        setInterval(updateLiveClock, 1000);
+        updateLiveClock();
+
+        // Custom Toast Notification System
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            toast.className = `custom-toast toast-${type}`;
+            
+            let iconClass = 'bi-info-circle-fill text-info';
+            if (type === 'success') iconClass = 'bi-check-circle-fill text-success';
+            if (type === 'error') iconClass = 'bi-exclamation-triangle-fill text-danger';
+            if (type === 'warning') iconClass = 'bi-exclamation-circle-fill text-warning';
+
+            toast.innerHTML = `
+                <i class="bi ${iconClass} fs-5"></i>
+                <div class="flex-grow-1">${message}</div>
+                <button type="button" class="btn-close btn-close-white small ms-2" onclick="this.parentElement.remove()"></button>
+            `;
+
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(10px)';
+                toast.style.transition = 'all 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        // Modern Copy to Clipboard with Toast
+        function copyToClipboard(text, label = 'Admission Number') {
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(function() {
+                    showToast(`${label} copied: <strong>${text}</strong>`, 'success');
+                }).catch(function() {
+                    showToast(`Copied: ${text}`, 'success');
+                });
+            } else {
+                showToast(`Copied: ${text}`, 'success');
+            }
+        }
+
+        // Command Palette
+        function openCommandPalette() {
+            const modalEl = document.getElementById('commandPaletteModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+                setTimeout(() => document.getElementById('commandInput').focus(), 250);
+            }
+        }
+
+        function openShortcutsModal() {
+            const modalEl = document.getElementById('shortcutsModal');
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        }
+
+        // Global Hotkeys
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + K or Cmd + K
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                e.preventDefault();
+                openCommandPalette();
+            }
+            // Press '?' (Shift + /)
+            if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+                e.preventDefault();
+                openShortcutsModal();
+            }
+        });
+
+        // Command Input Filter
+        const cmdInput = document.getElementById('commandInput');
+        if (cmdInput) {
+            cmdInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                const items = document.querySelectorAll('.command-item');
+                items.forEach(function(item) {
+                    const text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(query) ? 'flex' : 'none';
+                });
+            });
+        }
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

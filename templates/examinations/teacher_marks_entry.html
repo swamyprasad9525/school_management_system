@@ -1,16 +1,33 @@
 {% extends 'base.html' %}
 
-{% block title %}Examinations Gradebook | Algions SMS{% endblock %}
+{% block title %}Examinations Gradebook | School Management System{% endblock %}
+
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li><a href="{% url 'examinations:exams_list' %}">Assessments</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">Evaluation Gradebook</li>
+    </ol>
+</nav>
+{% endblock %}
 
 {% block content %}
-<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-pencil-square text-primary me-2"></i>Faculty Assessment Gradebook</h2>
-        <p class="text-muted small mb-0">Record raw scores. The system automatically computes percentages and assigns configured letter grades.</p>
+        <h2 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
+            <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                <i class="bi bi-pencil-square fs-5"></i>
+            </span>
+            <span>Faculty Assessment Gradebook</span>
+        </h2>
+        <p class="text-muted mb-0">Record student examination scores with real-time percentage computation and automated letter grade determination.</p>
     </div>
     {% if exam_subject %}
-        <span class="badge badge-subtle-primary px-3 py-2 rounded-pill">
-            <i class="bi bi-award-fill me-1"></i>Max Score: {{ exam_subject.max_marks|floatformat:0 }} pts &bull; Pass: {{ exam_subject.pass_marks|floatformat:0 }} pts
+        <span class="badge badge-subtle-primary px-3 py-2 rounded-pill font-monospace">
+            <i class="bi bi-award-fill me-1"></i>Max Marks: {{ exam_subject.max_marks|floatformat:0 }} pts &bull; Pass Mark: {{ exam_subject.pass_marks|floatformat:0 }} pts
         </span>
     {% endif %}
 </div>
@@ -19,9 +36,9 @@
 <div class="card card-premium p-4 mb-4">
     <form method="get" class="row g-3 align-items-end">
         <div class="col-md-4">
-            <label class="form-label fw-semibold small text-uppercase text-secondary">Examination</label>
+            <label class="form-label fw-bold small text-uppercase text-secondary">Examination Term</label>
             <select name="exam" class="form-select" required onchange="this.form.submit()">
-                <option value="">-- Select Exam --</option>
+                <option value="">-- Select Examination Term --</option>
                 {% for e in exams %}
                     <option value="{{ e.id }}" {% if selected_exam_id == e.id|stringformat:"i" %}selected{% endif %}>
                         {{ e.name }}
@@ -30,9 +47,9 @@
             </select>
         </div>
         <div class="col-md-4">
-            <label class="form-label fw-semibold small text-uppercase text-secondary">Assigned Class Section</label>
+            <label class="form-label fw-bold small text-uppercase text-secondary">Assigned Class Section</label>
             <select name="section" class="form-select" required onchange="this.form.submit()">
-                <option value="">-- Select Assigned Class --</option>
+                <option value="">-- Select Class Section --</option>
                 {% for s in sections %}
                     <option value="{{ s.id }}" {% if selected_section_id == s.id|stringformat:"i" %}selected{% endif %}>
                         {{ s }} (Grade {{ s.class_grade.name }})
@@ -41,9 +58,9 @@
             </select>
         </div>
         <div class="col-md-4">
-            <label class="form-label fw-semibold small text-uppercase text-secondary">Subject Paper</label>
+            <label class="form-label fw-bold small text-uppercase text-secondary">Subject Course Paper</label>
             <select name="subject" class="form-select" required onchange="this.form.submit()">
-                <option value="">-- Select Assigned Subject --</option>
+                <option value="">-- Select Subject Paper --</option>
                 {% for sub in subjects %}
                     <option value="{{ sub.id }}" {% if selected_subject_id == sub.id|stringformat:"i" %}selected{% endif %}>
                         {{ sub.name }} ({{ sub.code }})
@@ -55,20 +72,21 @@
 </div>
 
 {% if exam_subject %}
-    <form method="post">
+    <form method="post" id="gradebookForm">
         {% csrf_token %}
         <div class="card card-premium overflow-hidden mb-4">
-            <div class="p-3 bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="p-4 bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
                 <div>
-                    <h5 class="fw-bold mb-0">
+                    <h5 class="fw-bold mb-0 text-dark">
                         {{ exam.name }} &bull; <span class="text-primary">{{ subject.name }}</span> ({{ section }})
                     </h5>
                     <div class="small text-muted mt-1">
-                        Active Grading Scale: <span class="badge bg-white text-dark border">{{ exam.grading_scale.name|default:"Standard" }}</span>
+                        Active Ruleset: <span class="badge bg-white text-dark border font-monospace">{{ exam.grading_scale.name|default:"Standard 4.0 Scale" }}</span> &bull; 
+                        Interactive Live Preview Enabled
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill">
-                    <i class="bi bi-check-circle-fill me-1"></i>Commit & Calculate Grades
+                <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill shadow-xs">
+                    <i class="bi bi-check-circle-fill me-1"></i>Commit & Calculate Final Grades &rarr;
                 </button>
             </div>
             
@@ -76,10 +94,10 @@
                 <table class="table table-modern align-middle mb-0">
                     <thead>
                         <tr>
-                            <th style="width: 45px;">#</th>
+                            <th style="width: 50px;">#</th>
                             <th>Student Dossier</th>
-                            <th style="width: 220px;">Score Obtained (0 - {{ exam_subject.max_marks|floatformat:0 }})</th>
-                            <th style="width: 140px;" class="text-center">Awarded Grade</th>
+                            <th style="width: 230px;">Score (0 - {{ exam_subject.max_marks|floatformat:0 }})</th>
+                            <th style="width: 170px;" class="text-center">Computed Grade</th>
                             <th>Teacher Evaluation Remarks</th>
                         </tr>
                     </thead>
@@ -87,48 +105,50 @@
                         {% for enrollment in enrollments %}
                             {% with student=enrollment.student %}
                             <tr>
-                                <td class="text-muted small">{{ forloop.counter }}</td>
+                                <td class="text-muted small font-monospace">{{ forloop.counter }}</td>
                                 <td>
                                     <div class="d-flex align-items-center gap-2">
                                         <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs" 
-                                             style="width: 32px; height: 32px; background: #4f46e5; font-size: 0.8rem;">
+                                             style="width: 36px; height: 36px; background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%); font-size: 0.85rem;">
                                             {{ student.user.first_name|first }}
                                         </div>
                                         <div>
                                             <div class="fw-bold text-dark">{{ student.user.get_full_name|default:student.user.username }}</div>
-                                            <span class="text-muted small font-monospace">{{ student.admission_number }}</span>
+                                            <span class="badge bg-light text-secondary border font-monospace copy-badge py-0 px-1 small"
+                                                  onclick="copyToClipboard('{{ student.admission_number }}', 'Admission No')">
+                                                {{ student.admission_number }}
+                                            </span>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="input-group input-group-sm">
+                                    <div class="input-group">
                                         <input type="number" 
                                                step="0.5" 
                                                min="0" 
                                                max="{{ exam_subject.max_marks }}" 
                                                name="marks_{{ student.id }}" 
-                                               class="form-control fw-bold font-monospace" 
+                                               id="marks_input_{{ student.id }}"
+                                               data-student-id="{{ student.id }}"
+                                               class="form-control marks-interactive-input fw-bold font-monospace" 
                                                placeholder="0 - {{ exam_subject.max_marks|floatformat:0 }}"
                                                value="{% for sid, r in existing_results.items %}{% if sid == student.id %}{{ r.marks_obtained }}{% endif %}{% endfor %}">
-                                        <span class="input-group-text bg-light text-muted">/ {{ exam_subject.max_marks|floatformat:0 }}</span>
+                                        <span class="input-group-text bg-light text-muted font-monospace">/ {{ exam_subject.max_marks|floatformat:0 }}</span>
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    {% for sid, r in existing_results.items %}
-                                        {% if sid == student.id %}
-                                            <span class="badge 
-                                                {% if r.grade == 'A+' or r.grade == 'A' %}badge-subtle-success
-                                                {% elif r.grade == 'B' %}badge-subtle-primary
-                                                {% elif r.grade == 'C' %}badge-subtle-warning
-                                                {% elif r.grade == 'F' %}badge-subtle-danger
-                                                {% else %}bg-secondary{% endif %} px-3 py-1 font-monospace">
+                                    <span id="grade_badge_{{ student.id }}" class="badge badge-subtle-primary px-3 py-1 font-monospace fs-6">
+                                        {% for sid, r in existing_results.items %}
+                                            {% if sid == student.id %}
                                                 {{ r.grade }}
-                                            </span>
-                                        {% endif %}
-                                    {% endfor %}
+                                            {% endif %}
+                                        {% empty %}
+                                            -
+                                        {% endfor %}
+                                    </span>
                                 </td>
                                 <td>
-                                    <input type="text" name="remarks_{{ student.id }}" class="form-control form-control-sm" 
+                                    <input type="text" name="remarks_{{ student.id }}" class="form-control form-control-sm rounded-pill px-3" 
                                            placeholder="e.g. Excellent analytical thinking" 
                                            value="{% for sid, r in existing_results.items %}{% if sid == student.id %}{{ r.remarks }}{% endif %}{% endfor %}">
                                 </td>
@@ -137,7 +157,8 @@
                         {% empty %}
                             <tr>
                                 <td colspan="5" class="text-center py-5 text-muted">
-                                    No students enrolled in this section.
+                                    <i class="bi bi-people fs-2 d-block mb-2 text-muted"></i>
+                                    No students are enrolled in this class section.
                                 </td>
                             </tr>
                         {% endfor %}
@@ -147,13 +168,61 @@
 
             {% if enrollments %}
                 <div class="p-3 bg-light border-top d-flex justify-content-between align-items-center">
-                    <span class="small text-muted"><i class="bi bi-sliders text-primary me-1"></i>Automatic Grade Rules applied via {{ exam.grading_scale.name|default:"Standard Scale" }} on commit.</span>
-                    <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill">
+                    <span class="small text-muted font-monospace">
+                        <i class="bi bi-sliders text-primary me-1"></i>Automatic Grade Bounds: A+ (90%), A (80%), B (70%), C (60%), D (40%), F (&lt;40%)
+                    </span>
+                    <button type="submit" class="btn btn-primary-gradient px-4 rounded-pill shadow-xs">
                         <i class="bi bi-save-fill me-1"></i>Save & Calculate Grades
                     </button>
                 </div>
             {% endif %}
         </div>
     </form>
+{% else %}
+    <div class="empty-state-box">
+        <div class="empty-state-icon">
+            <i class="bi bi-journal-check"></i>
+        </div>
+        <h4 class="fw-bold mb-2">Select Examination, Class & Subject Paper</h4>
+        <p class="text-muted mx-auto mb-3" style="max-width: 480px;">
+            Choose the examination term and your assigned classroom division from the filter above to open the interactive marks evaluation spreadsheet.
+        </p>
+    </div>
 {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Real-time dynamic grade estimator
+    const maxMarks = {{ exam_subject.max_marks|default:100 }};
+    
+    function computeGrade(score) {
+        if (isNaN(score) || score === null || score === '') return '-';
+        const pct = (score / maxMarks) * 100;
+        if (pct >= 90) return { grade: 'A+', class: 'badge-subtle-success' };
+        if (pct >= 80) return { grade: 'A', class: 'badge-subtle-success' };
+        if (pct >= 70) return { grade: 'B', class: 'badge-subtle-primary' };
+        if (pct >= 60) return { grade: 'C', class: 'badge-subtle-warning' };
+        if (pct >= 40) return { grade: 'D', class: 'badge-subtle-info' };
+        return { grade: 'F', class: 'badge-subtle-danger' };
+    }
+
+    document.querySelectorAll('.marks-interactive-input').forEach(input => {
+        input.addEventListener('input', function() {
+            const sid = this.getAttribute('data-student-id');
+            const badge = document.getElementById(`grade_badge_${sid}`);
+            if (!badge) return;
+
+            const val = parseFloat(this.value);
+            const res = computeGrade(val);
+            if (res === '-') {
+                badge.textContent = '-';
+                badge.className = 'badge bg-light text-muted border px-3 py-1 font-monospace fs-6';
+            } else {
+                badge.textContent = res.grade;
+                badge.className = `badge ${res.class} px-3 py-1 font-monospace fs-6`;
+            }
+        });
+    });
+</script>
 {% endblock %}

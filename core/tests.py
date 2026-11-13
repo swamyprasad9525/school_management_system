@@ -316,3 +316,42 @@ class SchoolManagementSystemAcceptanceTests(TestCase):
                 amount=Decimal("1500.00")
             )
             p_over.clean()
+
+    # -------------------------------------------------------------
+    # ADVANCED CRUD ENDPOINTS TESTS
+    # -------------------------------------------------------------
+    def test_admin_can_enroll_student_via_view(self):
+        """
+        Admin can enroll a new student with auto user creation.
+        """
+        self.client.login(username="test_admin", password="password123")
+        post_data = {
+            'first_name': 'Ethan',
+            'last_name': 'Hunt',
+            'admission_number': 'ADM-NEW-999',
+            'gender': 'M',
+            'section': self.section_a.id,
+            'guardian': self.guardian1.id,
+        }
+        res = self.client.post(reverse('academics:create_student'), post_data)
+        self.assertEqual(res.status_code, 302)
+        new_student = StudentProfile.objects.filter(admission_number='ADM-NEW-999').first()
+        self.assertIsNotNone(new_student)
+        self.assertEqual(new_student.user.first_name, 'Ethan')
+        self.assertEqual(new_student.enrollments.count(), 1)
+
+    def test_admin_can_generate_invoice_via_view(self):
+        """
+        Admin can generate a fee invoice for a student from an active structure.
+        """
+        self.client.login(username="test_admin", password="password123")
+        post_data = {
+            'student': self.student1.id,
+            'fee_structure': self.fee_structure.id,
+            'due_date': '2026-12-31',
+        }
+        res = self.client.post(reverse('finance:generate_invoice'), post_data)
+        self.assertEqual(res.status_code, 302)
+        inv = FeeInvoice.objects.filter(student=self.student1, fee_structure=self.fee_structure).last()
+        self.assertIsNotNone(inv)
+        self.assertEqual(inv.total_amount, Decimal("1000.00"))

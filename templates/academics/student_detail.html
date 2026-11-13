@@ -2,23 +2,30 @@
 
 {% block title %}{{ student.user.get_full_name }} | Student Dossier{% endblock %}
 
+{% block breadcrumb %}
+<nav class="mb-3">
+    <ol class="breadcrumb-modern">
+        <li><a href="{% url 'core:home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        {% if user.is_admin_role or user.is_teacher_role %}
+            <li><a href="{% url 'academics:students_list' %}">Students Roster</a></li>
+        {% else %}
+            <li><a href="{% url 'core:guardian_dashboard' %}">Family Portal</a></li>
+        {% endif %}
+        <li><i class="bi bi-chevron-right small text-muted"></i></li>
+        <li class="active">{{ student.user.get_full_name }}</li>
+    </ol>
+</nav>
+{% endblock %}
+
 {% block content %}
 <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-1">
-                {% if user.is_admin_role or user.is_teacher_role %}
-                    <li class="breadcrumb-item"><a href="{% url 'academics:students_list' %}">Students</a></li>
-                {% else %}
-                    <li class="breadcrumb-item"><a href="{% url 'core:guardian_dashboard' %}">Portal</a></li>
-                {% endif %}
-                <li class="breadcrumb-item active">{{ student.user.get_full_name }}</li>
-            </ol>
-        </nav>
-        <h2 class="fw-bold mb-0">{{ student.user.get_full_name|default:student.user.username }}</h2>
+        <h2 class="fw-extrabold mb-0">{{ student.user.get_full_name|default:student.user.username }}</h2>
     </div>
     <div class="d-flex gap-2">
-        <a href="{% url 'examinations:student_report_card' student.id %}" class="btn btn-primary-gradient btn-sm rounded-pill px-4">
+        <a href="{% url 'examinations:student_report_card' student.id %}"
+            class="btn btn-primary-gradient btn-sm rounded-pill px-4">
             <i class="bi bi-file-earmark-spreadsheet me-1"></i>Official Transcript
         </a>
     </div>
@@ -29,19 +36,20 @@
     <div class="col-md-4">
         <div class="card card-premium mb-4">
             <div class="card-body text-center p-4">
-                <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white fw-bold shadow-sm mb-3" 
-                     style="width: 84px; height: 84px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); font-size: 2.2rem;">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center text-white fw-bold shadow-sm mb-3"
+                    style="width: 84px; height: 84px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); font-size: 2.2rem;">
                     {{ student.user.first_name|first }}
                 </div>
                 <h4 class="fw-bold mb-1">{{ student.user.get_full_name }}</h4>
-                <p class="text-muted small mb-2 font-monospace">Admission: <strong>{{ student.admission_number }}</strong></p>
-                
+                <p class="text-muted small mb-2 font-monospace">Admission: <strong>{{ student.admission_number
+                        }}</strong></p>
+
                 {% if enrollment %}
-                    <span class="badge badge-subtle-success px-3 py-2 rounded-pill">
-                        Active in {{ enrollment.section }}
-                    </span>
+                <span class="badge badge-subtle-success px-3 py-2 rounded-pill">
+                    Active in {{ enrollment.section }}
+                </span>
                 {% else %}
-                    <span class="badge badge-subtle-warning px-3 py-2 rounded-pill">No Active Enrollment</span>
+                <span class="badge badge-subtle-warning px-3 py-2 rounded-pill">No Active Enrollment</span>
                 {% endif %}
             </div>
             <ul class="list-group list-group-flush border-top">
@@ -67,24 +75,25 @@
             </div>
             <div class="card-body">
                 {% if student.guardian %}
-                    <div class="mb-2">
-                        <span class="text-muted small text-uppercase">Full Name</span>
-                        <div class="fw-bold">{{ student.guardian.user.get_full_name|default:student.guardian.user.username }}</div>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted small text-uppercase">Relationship</span>
-                        <div>{{ student.guardian.relationship }}</div>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-muted small text-uppercase">Emergency Phone</span>
-                        <div class="font-monospace text-primary">{{ student.guardian.emergency_contact|default:"-" }}</div>
-                    </div>
-                    <div>
-                        <span class="text-muted small text-uppercase">Residential Address</span>
-                        <div class="small">{{ student.guardian.address|default:"-" }}</div>
-                    </div>
+                <div class="mb-2">
+                    <span class="text-muted small text-uppercase">Full Name</span>
+                    <div class="fw-bold">{{ student.guardian.user.get_full_name|default:student.guardian.user.username
+                        }}</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small text-uppercase">Relationship</span>
+                    <div>{{ student.guardian.relationship }}</div>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small text-uppercase">Emergency Phone</span>
+                    <div class="font-monospace text-primary">{{ student.guardian.emergency_contact|default:"-" }}</div>
+                </div>
+                <div>
+                    <span class="text-muted small text-uppercase">Residential Address</span>
+                    <div class="small">{{ student.guardian.address|default:"-" }}</div>
+                </div>
                 {% else %}
-                    <p class="text-muted small mb-0">No guardian registered for this student record.</p>
+                <p class="text-muted small mb-0">No guardian registered for this student record.</p>
                 {% endif %}
             </div>
         </div>
@@ -127,13 +136,15 @@
         <div class="card card-premium p-4">
             <h5 class="fw-bold mb-3">Academic & Operational Dossier Shortcuts</h5>
             <div class="d-flex flex-wrap gap-2">
-                <a href="{% url 'examinations:student_report_card' student.id %}" class="btn btn-outline-primary rounded-pill px-3">
+                <a href="{% url 'examinations:student_report_card' student.id %}"
+                    class="btn btn-outline-primary rounded-pill px-3">
                     <i class="bi bi-award me-1"></i>View Official Report Card
                 </a>
                 {% if user.is_admin_role or user.is_guardian_role %}
-                    <a href="{% url 'finance:invoices_list' %}?q={{ student.admission_number }}" class="btn btn-outline-success rounded-pill px-3">
-                        <i class="bi bi-receipt me-1"></i>Inspect Fee Invoices
-                    </a>
+                <a href="{% url 'finance:invoices_list' %}?q={{ student.admission_number }}"
+                    class="btn btn-outline-success rounded-pill px-3">
+                    <i class="bi bi-receipt me-1"></i>Inspect Fee Invoices
+                </a>
                 {% endif %}
             </div>
         </div>
