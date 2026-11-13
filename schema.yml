@@ -1,0 +1,406 @@
+openapi: 3.0.3
+info:
+  title: School Management System API
+  version: 1.0.0
+  description: API endpoints for Algions SMS (Academic, Attendance, Exams, Fees, Audit)
+paths:
+  /api/v1/attendance/:
+    get:
+      operationId: v1_attendance_list
+      description: API endpoint to retrieve attendance sessions.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AttendanceSession'
+          description: ''
+  /api/v1/attendance/{id}/:
+    get:
+      operationId: v1_attendance_retrieve
+      description: API endpoint to retrieve attendance sessions.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this attendance session.
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceSession'
+          description: ''
+  /api/v1/exam-results/:
+    get:
+      operationId: v1_exam_results_list
+      description: API endpoint to retrieve exam marks.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ExamResult'
+          description: ''
+  /api/v1/exam-results/{id}/:
+    get:
+      operationId: v1_exam_results_retrieve
+      description: API endpoint to retrieve exam marks.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this exam result.
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExamResult'
+          description: ''
+  /api/v1/invoices/:
+    get:
+      operationId: v1_invoices_list
+      description: API endpoint to retrieve student fee invoices.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FeeInvoice'
+          description: ''
+  /api/v1/invoices/{id}/:
+    get:
+      operationId: v1_invoices_retrieve
+      description: API endpoint to retrieve student fee invoices.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this fee invoice.
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FeeInvoice'
+          description: ''
+  /api/v1/students/:
+    get:
+      operationId: v1_students_list
+      description: API endpoint to retrieve enrolled students.
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/StudentProfile'
+          description: ''
+  /api/v1/students/{id}/:
+    get:
+      operationId: v1_students_retrieve
+      description: API endpoint to retrieve enrolled students.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        description: A unique integer value identifying this student profile.
+        required: true
+      tags:
+      - v1
+      security:
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StudentProfile'
+          description: ''
+components:
+  schemas:
+    AttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        admission_number:
+          type: string
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/AttendanceRecordStatusEnum'
+        remarks:
+          type: string
+          maxLength: 200
+      required:
+      - admission_number
+      - id
+      - student
+      - student_name
+    AttendanceRecordStatusEnum:
+      enum:
+      - PRESENT
+      - ABSENT
+      - LATE
+      - EXCUSED
+      type: string
+      description: |-
+        * `PRESENT` - Present
+        * `ABSENT` - Absent
+        * `LATE` - Late
+        * `EXCUSED` - Excused
+    AttendanceSession:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        date:
+          type: string
+          format: date
+        section:
+          type: integer
+        section_name:
+          type: string
+          readOnly: true
+        total_students:
+          type: integer
+          readOnly: true
+        present_count:
+          type: integer
+          readOnly: true
+        absent_count:
+          type: integer
+          readOnly: true
+        records:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttendanceRecord'
+          readOnly: true
+      required:
+      - absent_count
+      - date
+      - id
+      - present_count
+      - records
+      - section
+      - section_name
+      - total_students
+    ExamResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        exam_name:
+          type: string
+          readOnly: true
+        subject_name:
+          type: string
+          readOnly: true
+        marks_obtained:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,3}(?:\.\d{0,2})?$
+        grade:
+          type: string
+          maxLength: 10
+        remarks:
+          type: string
+          maxLength: 200
+      required:
+      - exam_name
+      - id
+      - marks_obtained
+      - student
+      - student_name
+      - subject_name
+    FeeInvoice:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        invoice_number:
+          type: string
+          maxLength: 50
+        student:
+          type: integer
+        student_name:
+          type: string
+          readOnly: true
+        fee_category:
+          type: string
+          readOnly: true
+        total_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        paid_amount:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+        balance:
+          type: string
+          format: decimal
+          pattern: ^-?\d{0,8}(?:\.\d{0,2})?$
+          readOnly: true
+        status:
+          $ref: '#/components/schemas/FeeInvoiceStatusEnum'
+        due_date:
+          type: string
+          format: date
+      required:
+      - balance
+      - due_date
+      - fee_category
+      - id
+      - invoice_number
+      - student
+      - student_name
+      - total_amount
+    FeeInvoiceStatusEnum:
+      enum:
+      - UNPAID
+      - PARTIAL
+      - PAID
+      type: string
+      description: |-
+        * `UNPAID` - Unpaid
+        * `PARTIAL` - Partially Paid
+        * `PAID` - Paid in Full
+    GenderEnum:
+      enum:
+      - M
+      - F
+      - O
+      type: string
+      description: |-
+        * `M` - Male
+        * `F` - Female
+        * `O` - Other
+    RoleEnum:
+      enum:
+      - ADMIN
+      - TEACHER
+      - GUARDIAN
+      - STUDENT
+      type: string
+      description: |-
+        * `ADMIN` - Admin / Staff
+        * `TEACHER` - Teacher
+        * `GUARDIAN` - Guardian
+        * `STUDENT` - Student
+    StudentProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        admission_number:
+          type: string
+          maxLength: 50
+        user:
+          allOf:
+          - $ref: '#/components/schemas/User'
+          readOnly: true
+        gender:
+          $ref: '#/components/schemas/GenderEnum'
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - admission_number
+      - id
+      - user
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        username:
+          type: string
+          description: Required. 150 characters or fewer. Letters, digits and @/./+/-/_
+            only.
+          pattern: ^[\w.@+-]+$
+          maxLength: 150
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          title: Email address
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        role:
+          $ref: '#/components/schemas/RoleEnum'
+      required:
+      - id
+      - username
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid

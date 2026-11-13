@@ -1,0 +1,261 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-speedometer2 text-primary me-2"></i>Administration Command Center</h2>
+        <p class="text-muted mb-0">Operational metrics, school enrollment health, financial collections, and audit logs.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'attendance:sessions_list' %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-calendar-check me-1"></i>Attendance Logs
+        </a>
+        <a href="{% url 'finance:ledger_report' %}" class="btn btn-outline-success btn-sm">
+            <i class="bi bi-journal-text me-1"></i>Reconcile Ledger
+        </a>
+    </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 bg-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Enrolled Students</span>
+                        <h3 class="fw-bold text-dark mt-1 mb-0">{{ total_students }}</h3>
+                    </div>
+                    <div class="rounded-circle bg-primary-subtle text-primary p-3">
+                        <i class="bi bi-people fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">{{ total_classes }} Grades & Sections</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 bg-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Teaching Faculty</span>
+                        <h3 class="fw-bold text-dark mt-1 mb-0">{{ total_teachers }}</h3>
+                    </div>
+                    <div class="rounded-circle bg-info-subtle text-info-emphasis p-3">
+                        <i class="bi bi-person-badge fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">Active Class & Subject Teachers</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 bg-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Today's Attendance</span>
+                        <h3 class="fw-bold text-success mt-1 mb-0">{{ today_attendance_rate }}%</h3>
+                    </div>
+                    <div class="rounded-circle bg-success-subtle text-success p-3">
+                        <i class="bi bi-check2-circle fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-muted mt-2">{{ today_sessions_count }} Sessions Tracked</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-lg-3">
+        <div class="card shadow-sm border-0 h-100 bg-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="text-muted small text-uppercase fw-semibold">Fees Collected</span>
+                        <h3 class="fw-bold text-success mt-1 mb-0">${{ total_collected }}</h3>
+                    </div>
+                    <div class="rounded-circle bg-warning-subtle text-warning-emphasis p-3">
+                        <i class="bi bi-cash-stack fs-4"></i>
+                    </div>
+                </div>
+                <div class="small text-danger mt-2">${{ outstanding_fees }} Outstanding</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Visual Health & Performance Analytics -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100 bg-white">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="bi bi-pie-chart text-primary me-2"></i>Financial Collection Health</h6>
+                <span class="badge bg-success-subtle text-success border">{{ collection_rate }}% Collected</span>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between small text-muted mb-1">
+                    <span>Collection Progress</span>
+                    <span class="fw-bold">${{ total_collected }} / ${{ total_invoiced }}</span>
+                </div>
+                <div class="progress mb-3" style="height: 12px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ collection_rate }}%;"></div>
+                </div>
+                <div class="row text-center g-2 pt-2 border-top">
+                    <div class="col-4">
+                        <span class="badge bg-success-subtle text-success border w-100 py-2">
+                            <strong>{{ paid_invoices_count }}</strong> Paid Full
+                        </span>
+                    </div>
+                    <div class="col-4">
+                        <span class="badge bg-warning-subtle text-warning-emphasis border w-100 py-2">
+                            <strong>{{ partial_invoices_count }}</strong> Partial
+                        </span>
+                    </div>
+                    <div class="col-4">
+                        <span class="badge bg-danger-subtle text-danger border w-100 py-2">
+                            <strong>{{ unpaid_invoices_count }}</strong> Unpaid
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100 bg-white">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0"><i class="bi bi-trophy text-warning me-2"></i>Academic Grade Distribution</h6>
+                <span class="badge bg-primary-subtle text-primary border">Evaluation Scale</span>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-3">Aggregated distribution of awarded letter grades across active examination papers:</p>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for item in grade_distribution %}
+                        <div class="border rounded p-2 text-center bg-light" style="min-width: 75px;">
+                            <span class="badge 
+                                {% if item.grade == 'A+' or item.grade == 'A' %}bg-success
+                                {% elif item.grade == 'B' %}bg-primary
+                                {% elif item.grade == 'C' %}bg-warning text-dark
+                                {% elif item.grade == 'F' %}bg-danger
+                                {% else %}bg-secondary{% endif %} fs-6 px-2 py-1">
+                                {{ item.grade }}
+                            </span>
+                            <div class="small fw-bold mt-1 text-dark">{{ item.count }} paper{{ item.count|pluralize }}</div>
+                        </div>
+                    {% empty %}
+                        <span class="text-muted small">No exam papers graded yet.</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Operational Quick Links & Audit Overview -->
+<div class="row g-4">
+    <!-- Quick Management Links -->
+    <div class="col-lg-4">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold mb-0">Management Shortcuts</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{% url 'academics:classes_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <i class="bi bi-diagram-3 text-primary me-2"></i>Classes & Sections
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                    <a href="{% url 'academics:students_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <i class="bi bi-person-lines-fill text-primary me-2"></i>Students Directory
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                    <a href="{% url 'examinations:exams_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <i class="bi bi-file-earmark-text text-primary me-2"></i>Exams & Grading Rules
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                    <a href="{% url 'finance:invoices_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <i class="bi bi-receipt text-primary me-2"></i>Student Fee Invoices
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                    <a href="{% url 'finance:ledger_report' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <i class="bi bi-journal-text text-primary me-2"></i>Fee Ledger Reconciliation
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                    <a href="{% url 'audit:logs_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-3">
+                        <div>
+                            <i class="bi bi-shield-check text-primary me-2"></i>System Audit Trail
+                        </div>
+                        <i class="bi bi-chevron-right text-muted small"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Audit Logs -->
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Recent Material Operations (Audit Trail)</h5>
+                <a href="{% url 'audit:logs_list' %}" class="small text-primary text-decoration-none">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Time</th>
+                                <th>Actor</th>
+                                <th>Action</th>
+                                <th>Target</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in recent_logs %}
+                                <tr>
+                                    <td class="small text-muted">{{ log.timestamp|date:"H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-secondary-subtle text-dark border">{{ log.actor.username|default:"System" }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge 
+                                            {% if log.action == 'PAYMENT' %}bg-warning text-dark
+                                            {% elif log.action == 'MARKS_ENTRY' %}bg-primary
+                                            {% elif log.action == 'ATTENDANCE' %}bg-info text-dark
+                                            {% else %}bg-success{% endif %}">
+                                            {{ log.get_action_display }}
+                                        </span>
+                                    </td>
+                                    <td><code>{{ log.object_repr|truncatechars:30 }}</code></td>
+                                    <td class="small text-muted">{{ log.details|truncatechars:35|default:"-" }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4 text-muted">No recent operations logged yet.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

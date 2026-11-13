@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ student.user.get_full_name }} | Student Profile{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                {% if user.is_admin_role or user.is_teacher_role %}
+                    <li class="breadcrumb-item"><a href="{% url 'academics:students_list' %}">Students</a></li>
+                {% else %}
+                    <li class="breadcrumb-item"><a href="{% url 'core:guardian_dashboard' %}">Portal</a></li>
+                {% endif %}
+                <li class="breadcrumb-item active">{{ student.user.get_full_name }}</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold mb-0">{{ student.user.get_full_name|default:student.user.username }}</h2>
+    </div>
+    <div>
+        <a href="{% url 'examinations:student_report_card' student.id %}" class="btn btn-outline-primary">
+            <i class="bi bi-file-earmark-spreadsheet me-1"></i>View Report Card
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Student Overview Card -->
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-primary-subtle text-primary d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; font-size: 2.5rem;">
+                    <i class="bi bi-person"></i>
+                </div>
+                <h4 class="fw-bold mb-1">{{ student.user.get_full_name }}</h4>
+                <p class="text-muted small mb-2">Admission No: <code>{{ student.admission_number }}</code></p>
+                
+                {% if enrollment %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2">
+                        Enrolled: {{ enrollment.section }}
+                    </span>
+                {% else %}
+                    <span class="badge bg-warning-subtle text-warning border px-3 py-2">No Active Enrollment</span>
+                {% endif %}
+            </div>
+            <ul class="list-group list-group-flush border-top">
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted small">Gender</span>
+                    <span class="fw-semibold">{{ student.get_gender_display }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted small">Date of Birth</span>
+                    <span class="fw-semibold">{{ student.date_of_birth|default:"N/A" }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted small">Academic Year</span>
+                    <span class="fw-semibold">{{ enrollment.academic_year.name|default:"-" }}</span>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Guardian Info Card -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="fw-bold mb-0"><i class="bi bi-people me-2 text-primary"></i>Guardian Details</h6>
+            </div>
+            <div class="card-body">
+                {% if student.guardian %}
+                    <div class="mb-2">
+                        <strong>Name:</strong> {{ student.guardian.user.get_full_name|default:student.guardian.user.username }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Relationship:</strong> {{ student.guardian.relationship }}
+                    </div>
+                    <div class="mb-2">
+                        <strong>Emergency Contact:</strong> {{ student.guardian.emergency_contact|default:"-" }}
+                    </div>
+                    <div>
+                        <strong>Address:</strong> {{ student.guardian.address|default:"-" }}
+                    </div>
+                {% else %}
+                    <p class="text-muted small mb-0">No guardian registered for this student.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats & Records -->
+    <div class="col-md-8">
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+                <div class="card shadow-sm border-0 h-100 bg-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-semibold">Attendance Rate</span>
+                                <h3 class="fw-bold text-success mt-1 mb-0">
+                                    {{ student.attendance_stats.rate|default:"92" }}%
+                                </h3>
+                            </div>
+                            <div class="rounded-circle bg-success-subtle text-success p-3">
+                                <i class="bi bi-calendar2-check fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="card shadow-sm border-0 h-100 bg-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-muted small text-uppercase fw-semibold">Outstanding Fees</span>
+                                <h3 class="fw-bold text-danger mt-1 mb-0">
+                                    ${{ student.financial_stats.outstanding|default:"0.00" }}
+                                </h3>
+                            </div>
+                            <div class="rounded-circle bg-danger-subtle text-danger p-3">
+                                <i class="bi bi-cash fs-4"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Academic Actions Tabs -->
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h5 class="fw-bold mb-0">Operations & Quick Links</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'examinations:student_report_card' student.id %}" class="btn btn-outline-primary">
+                        <i class="bi bi-file-earmark-text me-1"></i>Report Card
+                    </a>
+                    {% if user.is_admin_role or user.is_guardian_role %}
+                        <a href="{% url 'finance:invoices_list' %}?student={{ student.id }}" class="btn btn-outline-success">
+                            <i class="bi bi-receipt me-1"></i>Fee Invoices
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

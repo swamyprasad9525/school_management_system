@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Receipt #{{ payment.transaction_reference }} | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="{% url 'finance:invoices_list' %}">Invoices</a></li>
+                <li class="breadcrumb-item active">Payment Receipt</li>
+            </ol>
+        </nav>
+        <h2 class="fw-bold mb-0">Official Fee Payment Receipt</h2>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="{% url 'finance:invoices_list' %}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Back to Invoices
+        </a>
+        <button type="button" class="btn btn-primary" onclick="window.print()">
+            <i class="bi bi-printer me-1"></i>Print Receipt
+        </button>
+    </div>
+</div>
+
+<div class="card shadow-sm border p-4 p-md-5 bg-white mx-auto" style="max-width: 800px;">
+    <!-- School Header -->
+    <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+        <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="fs-2 text-primary">🏫</span>
+                <h4 class="fw-bold text-uppercase mb-0">Algions International Academy</h4>
+            </div>
+            <p class="text-muted small mb-0">Financial Bursar Office &bull; Payment Confirmation Voucher</p>
+        </div>
+        <div class="text-end">
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
+                <i class="bi bi-check2-circle me-1"></i>CONFIRMED
+            </span>
+            <div class="small text-muted mt-1">{{ payment.payment_date|date:"F d, Y - H:i" }}</div>
+        </div>
+    </div>
+
+    <!-- Receipt Meta -->
+    <div class="row g-3 mb-4 bg-light p-3 rounded border">
+        <div class="col-sm-6">
+            <span class="text-muted small text-uppercase">Transaction Reference</span>
+            <div class="fw-bold font-monospace text-primary fs-5">{{ payment.transaction_reference }}</div>
+        </div>
+        <div class="col-sm-6">
+            <span class="text-muted small text-uppercase">Billed Invoice Number</span>
+            <div class="fw-bold font-monospace">{{ invoice.invoice_number }}</div>
+        </div>
+        <div class="col-sm-6 mt-3">
+            <span class="text-muted small text-uppercase">Student Details</span>
+            <div class="fw-bold">{{ student.user.get_full_name }}</div>
+            <div class="small text-muted">Admission No: <code>{{ student.admission_number }}</code></div>
+        </div>
+        <div class="col-sm-6 mt-3">
+            <span class="text-muted small text-uppercase">Payer / Guardian</span>
+            <div class="fw-bold">
+                {% if student.guardian %}
+                    {{ student.guardian.user.get_full_name }} ({{ student.guardian.relationship }})
+                {% else %}
+                    Self / Student
+                {% endif %}
+            </div>
+            <div class="small text-muted">Recorded By: {{ payment.recorded_by.username|default:"Online Portal" }}</div>
+        </div>
+    </div>
+
+    <!-- Payment Breakdown Table -->
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered align-middle">
+            <thead class="table-light text-uppercase small">
+                <tr>
+                    <th>Item Description</th>
+                    <th>Payment Method</th>
+                    <th class="text-end">Amount Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="fw-bold">{{ invoice.fee_structure.category.name }}</div>
+                        <div class="small text-muted">{{ invoice.fee_structure.class_grade.name }} Tuition Schedule</div>
+                    </td>
+                    <td>
+                        <span class="badge bg-light text-dark border">{{ payment.get_payment_method_display }}</span>
+                        {% if payment.notes %}
+                            <div class="small text-muted mt-1">{{ payment.notes }}</div>
+                        {% endif %}
+                    </td>
+                    <td class="text-end fw-bold text-success fs-5">
+                        ${{ payment.amount }}
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot class="table-light">
+                <tr>
+                    <td colspan="2" class="text-end fw-semibold">Total Invoice Amount:</td>
+                    <td class="text-end fw-semibold">${{ invoice.total_amount }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-end fw-semibold">Cumulative Paid to Date:</td>
+                    <td class="text-end fw-semibold text-success">${{ invoice.paid_amount }}</td>
+                </tr>
+                <tr class="fs-6">
+                    <td colspan="2" class="text-end fw-bold">Remaining Balance Due:</td>
+                    <td class="text-end fw-bold {% if invoice.balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                        ${{ invoice.balance }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- Seal and Signatures -->
+    <div class="row align-items-end mt-5 pt-3">
+        <div class="col-6">
+            <div class="border rounded p-3 text-center bg-light" style="width: 180px;">
+                <div class="text-success fw-bold text-uppercase small mb-1">
+                    <i class="bi bi-shield-check me-1"></i>Verified Ledger
+                </div>
+                <div class="text-muted" style="font-size: 0.75rem;">
+                    SYSTEM GENERATED<br>SIMULATED TRANSACTION
+                </div>
+            </div>
+        </div>
+        <div class="col-6 text-end">
+            <div class="d-inline-block border-top border-dark pt-2 px-4 text-center">
+                <span class="small text-muted">Accounts Bursar / Cashier</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

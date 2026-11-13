@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Record Daily Attendance | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-pencil-square text-primary me-2"></i>Record Daily Attendance</h2>
+        <p class="text-muted mb-0">Select your assigned class and mark attendance for today's session.</p>
+    </div>
+</div>
+
+<!-- Section & Date Selection Card -->
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold">Class & Section</label>
+                <select name="section" class="form-select" required onchange="this.form.submit()">
+                    <option value="">-- Choose Assigned Class & Section --</option>
+                    {% for s in available_sections %}
+                        <option value="{{ s.id }}" {% if selected_section_id == s.id|stringformat:"i" %}selected{% endif %}>
+                            {{ s }} (Grade {{ s.class_grade.name }})
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Date</label>
+                <input type="date" name="date" class="form-control" value="{{ attendance_date }}" required onchange="this.form.submit()">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-outline-primary w-100">Load Students</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if section %}
+    <form method="post" action="{% url 'attendance:record_attendance' %}">
+        {% csrf_token %}
+        <input type="hidden" name="section" value="{{ section.id }}">
+        <input type="hidden" name="date" value="{{ attendance_date }}">
+
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <h5 class="fw-bold mb-0">Roster for {{ section }} — <span class="text-primary">{{ attendance_date }}</span></h5>
+                    <span class="text-muted small">{{ enrollments.count }} enrolled students</span>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-success btn-sm" onclick="markAll('PRESENT')">
+                        <i class="bi bi-check-all me-1"></i>Mark All Present
+                    </button>
+                    <button type="submit" class="btn btn-primary btn-sm px-4">
+                        <i class="bi bi-save me-1"></i>Save Attendance
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">#</th>
+                                <th>Admission No</th>
+                                <th>Student Name</th>
+                                <th>Attendance Status</th>
+                                <th>Remarks (Optional)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enrollment in enrollments %}
+                                {% with student=enrollment.student %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td><code>{{ student.admission_number }}</code></td>
+                                    <td class="fw-semibold">
+                                        {{ student.user.get_full_name|default:student.user.username }}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            {% for val, label in status_choices %}
+                                                <input type="radio" class="btn-check status-radio-{{ val }}" 
+                                                    name="status_{{ student.id }}" 
+                                                    id="status_{{ student.id }}_{{ val }}" 
+                                                    value="{{ val }}" 
+                                                    autocomplete="off"
+                                                    {% if existing_records %}
+                                                        {% for s_id, s_status in existing_records.items %}
+                                                            {% if s_id == student.id and s_status == val %}checked{% endif %}
+                                                        {% endfor %}
+                                                    {% else %}
+                                                        {% if val == 'PRESENT' %}checked{% endif %}
+                                                    {% endif %}>
+                                                <label class="btn btn-outline-{% if val == 'PRESENT' %}success{% elif val == 'ABSENT' %}danger{% elif val == 'LATE' %}warning{% else %}secondary{% endif %} btn-sm px-3" 
+                                                       for="status_{{ student.id }}_{{ val }}">
+                                                    {{ label }}
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="text" name="remarks_{{ student.id }}" class="form-control form-control-sm" placeholder="Notes (e.g. Doctor note)">
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        No active students enrolled in this section.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% if enrollments %}
+                <div class="card-footer bg-white py-3 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4 fw-semibold">
+                        <i class="bi bi-save me-1"></i>Save Attendance Records
+                    </button>
+                </div>
+            {% endif %}
+        </div>
+    </form>
+{% endif %}
+
+<script>
+    function markAll(status) {
+        document.querySelectorAll('.status-radio-' + status).forEach(function(radio) {
+            radio.checked = true;
+        });
+    }
+</script>
+{% endblock %}
+

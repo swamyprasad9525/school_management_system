@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In | School Management System{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-md-5 col-lg-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    <span class="fs-1 text-primary">🏫</span>
+                    <h3 class="fw-bold mt-2 mb-1">School Portal</h3>
+                    <p class="text-muted small">Sign in to your role-based account</p>
+                </div>
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                            <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label fw-semibold">Password</label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">Sign In</button>
+                </form>
+
+                <!-- Demo Credentials Helper for Reviewer -->
+                <div class="mt-4 p-3 bg-light rounded border">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="fw-bold small text-uppercase text-secondary">Demo Accounts</span>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle">Ready</span>
+                    </div>
+                    <div class="small">
+                        <div class="mb-1"><strong>Admin:</strong> <code>admin</code> / <code>admin123</code></div>
+                        <div class="mb-1"><strong>Teacher:</strong> <code>teacher1</code> / <code>teacher123</code></div>
+                        <div><strong>Guardian:</strong> <code>guardian1</code> / <code>guardian123</code></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

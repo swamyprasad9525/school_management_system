@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Grading Scales & Rules | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-sliders text-primary me-2"></i>Grading Rules & Thresholds</h2>
+        <p class="text-muted mb-0">Configurable grading schemes mapping percentage intervals to letter grades and grade points.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for scale in scales %}
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">{{ scale.name }}</h5>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                        {{ scale.rules.count }} Rules
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Letter Grade</th>
+                                    <th>Percentage Range</th>
+                                    <th>Grade Point</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rule in scale.rules.all %}
+                                    <tr>
+                                        <td>
+                                            <span class="badge 
+                                                {% if rule.grade == 'A+' or rule.grade == 'A' %}bg-success
+                                                {% elif rule.grade == 'B' %}bg-primary
+                                                {% elif rule.grade == 'C' %}bg-warning text-dark
+                                                {% elif rule.grade == 'D' %}bg-secondary
+                                                {% else %}bg-danger{% endif %} px-3 py-1">
+                                                {{ rule.grade }}
+                                            </span>
+                                        </td>
+                                        <td class="fw-semibold">{{ rule.min_percentage }}% - {{ rule.max_percentage }}%</td>
+                                        <td><code>{{ rule.grade_point }}</code></td>
+                                        <td class="small text-muted">{{ rule.remarks|default:"-" }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">No rules configured in this scale.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12 text-center py-5 text-muted">
+            <p>No grading scales configured. Run seed data to populate the standard scale.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

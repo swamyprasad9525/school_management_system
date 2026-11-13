@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Faculty & Teachers | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-people text-primary me-2"></i>Faculty & Teaching Staff</h2>
+        <p class="text-muted mb-0">Registered teachers, designations, and their assigned class teacher responsibilities.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    {% for teacher in teachers %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.25rem;">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold mb-0">{{ teacher.user.get_full_name|default:teacher.user.username }}</h5>
+                            <span class="text-muted small">Employee ID: <code>{{ teacher.employee_id }}</code></span>
+                        </div>
+                    </div>
+                    <div class="small mb-2">
+                        <strong>Designation:</strong> {{ teacher.designation }}
+                    </div>
+                    <div class="small mb-2">
+                        <strong>Qualification:</strong> {{ teacher.qualification|default:"B.Ed / M.Sc" }}
+                    </div>
+                    <div class="small mb-3">
+                        <strong>Email:</strong> {{ teacher.user.email|default:"N/A" }}
+                    </div>
+                    <hr class="text-muted opacity-25">
+                    <div class="small">
+                        <span class="text-secondary fw-semibold">Class Teacher For:</span>
+                        <div class="mt-1">
+                            {% for section in teacher.assigned_sections.all %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle me-1 mb-1">
+                                    {{ section }}
+                                </span>
+                            {% empty %}
+                                <span class="text-muted fst-italic">None assigned as Class Teacher</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-person-x fs-1 d-block mb-3"></i>
+            <h5>No faculty members registered</h5>
+            <p>Populate sample teachers with the seed command.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

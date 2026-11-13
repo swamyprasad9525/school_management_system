@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}Audit Trail | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Audit Trail & Event Log</h2>
+        <p class="text-muted mb-0">Immutable records of material operations, marks updates, and financial payments.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <input type="text" name="q" class="form-control" placeholder="Search by object or details..." value="{{ search_query }}">
+            </div>
+            <div class="col-md-4">
+                <select name="action" class="form-select">
+                    <option value="">All Action Types</option>
+                    {% for code, label in action_choices %}
+                        <option value="{{ code }}" {% if action_filter == code %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter me-1"></i>Filter</button>
+                <a href="{% url 'audit:logs_list' %}" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Actor</th>
+                        <th>Action</th>
+                        <th>Target Model</th>
+                        <th>Target Object</th>
+                        <th>Details</th>
+                        <th>IP Address</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in page_obj %}
+                        <tr>
+                            <td class="small text-muted">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                            <td>
+                                {% if log.actor %}
+                                    <span class="badge bg-secondary-subtle text-dark border">{{ log.actor.username }}</span>
+                                {% else %}
+                                    <span class="badge bg-light text-muted border">System</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge 
+                                    {% if log.action == 'CREATE' %}bg-success
+                                    {% elif log.action == 'UPDATE' or log.action == 'MARKS_ENTRY' %}bg-primary
+                                    {% elif log.action == 'DELETE' %}bg-danger
+                                    {% elif log.action == 'PAYMENT' %}bg-warning text-dark
+                                    {% else %}bg-info text-dark{% endif %}">
+                                    {{ log.get_action_display }}
+                                </span>
+                            </td>
+                            <td class="fw-semibold">{{ log.model_name }}</td>
+                            <td><code>{{ log.object_repr|truncatechars:40 }}</code></td>
+                            <td class="small">{{ log.details|default:"-" }}</td>
+                            <td class="small text-muted">{{ log.ip_address|default:"127.0.0.1" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center py-4 text-muted">
+                                <i class="bi bi-journal-x fs-3 d-block mb-2"></i>
+                                No audit records found.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{% if page_obj.has_other_pages %}
+    <nav class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&action={{ action_filter }}">Previous</a></li>
+            {% endif %}
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&action={{ action_filter }}">Next</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
+{% endblock %}
+

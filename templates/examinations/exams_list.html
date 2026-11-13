@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}Examinations & Assessments | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-file-earmark-text text-primary me-2"></i>Examinations Schedule</h2>
+        <p class="text-muted mb-0">Scheduled academic assessments, subject papers, and grading scales.</p>
+    </div>
+    {% if user.is_teacher_role %}
+        <a href="{% url 'examinations:teacher_marks_entry' %}" class="btn btn-primary">
+            <i class="bi bi-pencil-square me-1"></i>Enter Marks
+        </a>
+    {% endif %}
+</div>
+
+<div class="row g-4">
+    {% for exam in exams %}
+        <div class="col-lg-6">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-0 text-dark">{{ exam.name }}</h5>
+                        <span class="text-muted small">Academic Year: {{ exam.academic_year.name }}</span>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">
+                        {{ exam.start_date|date:"M d" }} - {{ exam.end_date|date:"M d, Y" }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted small">Grading Scale: <strong>{{ exam.grading_scale.name|default:"Standard" }}</strong></span>
+                        <span class="badge bg-light text-secondary border">{{ exam.exam_subjects.count }} Scheduled Subject Papers</span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Grade</th>
+                                    <th>Subject</th>
+                                    <th class="text-center">Max Marks</th>
+                                    <th class="text-center">Pass Marks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for es in exam.exam_subjects.all %}
+                                    <tr>
+                                        <td><span class="badge bg-light text-dark border">{{ es.class_grade.name }}</span></td>
+                                        <td class="fw-semibold">{{ es.subject.name }}</td>
+                                        <td class="text-center fw-bold text-primary">{{ es.max_marks|floatformat:0 }}</td>
+                                        <td class="text-center text-muted">{{ es.pass_marks|floatformat:0 }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted py-3">No subjects scheduled for this exam yet.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12 text-center py-5 text-muted">
+            <i class="bi bi-file-earmark-x fs-1 d-block mb-2"></i>
+            <h5>No examinations scheduled</h5>
+            <p>Seed data will populate comprehensive exams and grading rules.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
+

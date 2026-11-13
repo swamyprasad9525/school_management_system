@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Summary Report | School Management System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1"><i class="bi bi-bar-chart-line text-primary me-2"></i>Attendance Summary Report</h2>
+        <p class="text-muted mb-0">Aggregate attendance percentages and attendance health per student.</p>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Admission No</th>
+                        <th>Student Name</th>
+                        <th>Guardian</th>
+                        <th>Total Recorded Sessions</th>
+                        <th>Sessions Present</th>
+                        <th>Sessions Absent</th>
+                        <th>Attendance Rate</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in student_stats %}
+                        <tr>
+                            <td><code>{{ item.student.admission_number }}</code></td>
+                            <td class="fw-semibold">
+                                <a href="{% url 'academics:student_detail' item.student.id %}" class="text-decoration-none">
+                                    {{ item.student.user.get_full_name|default:item.student.user.username }}
+                                </a>
+                            </td>
+                            <td>{{ item.student.guardian.user.get_full_name|default:"-" }}</td>
+                            <td>{{ item.total }}</td>
+                            <td><span class="text-success fw-bold">{{ item.present }}</span></td>
+                            <td><span class="text-danger fw-bold">{{ item.absent }}</span></td>
+                            <td style="min-width: 150px;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="progress flex-grow-1" style="height: 8px;">
+                                        <div class="progress-bar {% if item.rate >= 85 %}bg-success{% elif item.rate >= 75 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                             style="width: {{ item.rate }}%;"></div>
+                                    </div>
+                                    <span class="fw-semibold small">{{ item.rate }}%</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if item.rate >= 85 %}
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle">Excellent</span>
+                                {% elif item.rate >= 75 %}
+                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Satisfactory</span>
+                                {% else %}
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Low Attendance</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                No attendance records available for summary analysis.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
