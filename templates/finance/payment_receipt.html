@@ -23,7 +23,8 @@
         <a href="{% url 'finance:invoices_list' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-xs">
             <i class="bi bi-arrow-left me-1"></i>Back to Invoices
         </a>
-        <button type="button" class="btn btn-primary-gradient btn-sm rounded-pill px-4 shadow-xs" onclick="window.print()">
+        <button type="button" class="btn btn-primary-gradient btn-sm rounded-pill px-4 shadow-xs"
+            onclick="window.print()">
             <i class="bi bi-printer-fill me-1"></i>Print Official Voucher
         </button>
     </div>
@@ -34,13 +35,14 @@
     <!-- School Header & Crest -->
     <div class="d-flex flex-wrap justify-content-between align-items-start border-bottom pb-4 mb-4 gap-3">
         <div class="d-flex align-items-center gap-3">
-            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm" 
-                 style="width: 52px; height: 52px; background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%); font-size: 1.5rem;">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm"
+                style="width: 52px; height: 52px; background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%); font-size: 1.5rem;">
                 <i class="bi bi-mortarboard-fill"></i>
             </div>
             <div>
                 <h4 class="fw-extrabold text-uppercase mb-0 tracking-tight text-dark">Algions International Academy</h4>
-                <div class="small fw-semibold text-primary text-uppercase font-monospace" style="font-size: 0.72rem;">Financial Bursar & Cashier Division</div>
+                <div class="small fw-semibold text-primary text-uppercase font-monospace" style="font-size: 0.72rem;">
+                    Financial Bursar & Cashier Division</div>
                 <div class="text-muted small">Official Transaction Remittance Confirmation Voucher</div>
             </div>
         </div>
@@ -55,28 +57,34 @@
     <!-- Metadata Grid -->
     <div class="row g-3 mb-4 bg-light p-3 rounded-3 border">
         <div class="col-sm-6">
-            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Transaction Reference</span>
+            <span class="text-muted small text-uppercase fw-bold"
+                style="font-size: 0.7rem; letter-spacing: 0.05em;">Transaction Reference</span>
             <div class="fw-bold font-monospace text-primary fs-5">{{ payment.transaction_reference }}</div>
         </div>
         <div class="col-sm-6">
-            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Billed Statement ID</span>
+            <span class="text-muted small text-uppercase fw-bold"
+                style="font-size: 0.7rem; letter-spacing: 0.05em;">Billed Statement ID</span>
             <div class="fw-bold font-monospace text-dark fs-5">{{ invoice.invoice_number }}</div>
         </div>
         <div class="col-sm-6 mt-3">
-            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Student Beneficiary</span>
+            <span class="text-muted small text-uppercase fw-bold"
+                style="font-size: 0.7rem; letter-spacing: 0.05em;">Student Beneficiary</span>
             <div class="fw-bold text-dark">{{ student.user.get_full_name }}</div>
-            <div class="small text-muted">Admission No: <code class="text-primary font-monospace">{{ student.admission_number }}</code></div>
+            <div class="small text-muted">Admission No: <code
+                    class="text-primary font-monospace">{{ student.admission_number }}</code></div>
         </div>
         <div class="col-sm-6 mt-3">
-            <span class="text-muted small text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.05em;">Payer / Remitter</span>
+            <span class="text-muted small text-uppercase fw-bold"
+                style="font-size: 0.7rem; letter-spacing: 0.05em;">Payer / Remitter</span>
             <div class="fw-bold text-dark">
                 {% if student.guardian %}
-                    {{ student.guardian.user.get_full_name }} ({{ student.guardian.relationship }})
+                {{ student.guardian.user.get_full_name }} ({{ student.guardian.relationship }})
                 {% else %}
-                    Self / Student
+                Self / Student
                 {% endif %}
             </div>
-            <div class="small text-muted">Authorized By: <strong>{{ payment.recorded_by.username|default:"System Portal" }}</strong></div>
+            <div class="small text-muted">Authorized By: <strong>{{ payment.recorded_by.username|default:"System Portal"
+                    }}</strong></div>
         </div>
     </div>
 
@@ -94,12 +102,14 @@
                 <tr>
                     <td>
                         <div class="fw-bold text-dark">{{ invoice.fee_structure.category.name }}</div>
-                        <div class="small text-muted">{{ invoice.fee_structure.class_grade.name }} Standard Curriculum Assessment</div>
+                        <div class="small text-muted">{{ invoice.fee_structure.class_grade.name }} Standard Curriculum
+                            Assessment</div>
                     </td>
                     <td>
-                        <span class="badge bg-light text-dark border font-monospace">{{ payment.get_payment_method_display }}</span>
+                        <span class="badge bg-light text-dark border font-monospace">{{
+                            payment.get_payment_method_display }}</span>
                         {% if payment.notes %}
-                            <div class="small text-muted font-monospace mt-1">{{ payment.notes }}</div>
+                        <div class="small text-muted font-monospace mt-1">{{ payment.notes }}</div>
                         {% endif %}
                     </td>
                     <td class="text-end fw-extrabold text-success font-monospace fs-5">
@@ -118,7 +128,8 @@
                 </tr>
                 <tr class="fs-6">
                     <td colspan="2" class="text-end fw-bold">Remaining Open Balance:</td>
-                    <td class="text-end fw-bold {% if invoice.balance > 0 %}text-danger{% else %}text-success{% endif %}">
+                    <td
+                        class="text-end fw-bold {% if invoice.balance > 0 %}text-danger{% else %}text-success{% endif %}">
                         ${{ invoice.balance }}
                     </td>
                 </tr>
@@ -143,7 +154,8 @@
         </div>
         <div class="col-6 text-end">
             <div class="d-inline-block border-top border-dark pt-2 px-4 text-center">
-                <span class="small text-muted fw-bold text-uppercase" style="font-size: 0.7rem;">Authorized Bursar / Registrar</span>
+                <span class="small text-muted fw-bold text-uppercase" style="font-size: 0.7rem;">Authorized Bursar /
+                    Registrar</span>
             </div>
         </div>
     </div>

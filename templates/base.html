@@ -19,18 +19,17 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         @media print {
-            .app-sidebar, .app-topbar, .footer, .btn, .no-print, .alert, .persona-pill, .toast-container-custom, .modal {
+            .app-sidebar, .app-topbar, .footer, .btn, .no-print, .alert, .persona-pill {
                 display: none !important;
             }
             .app-main {
                 margin-left: 0 !important;
-                padding: 0 !important;
             }
             body {
                 background: #fff !important;
                 color: #000 !important;
             }
-            .card-premium, .certificate-frame, .receipt-voucher {
+            .card-premium, .certificate-frame {
                 border: 1px solid #ccc !important;
                 box-shadow: none !important;
             }
@@ -39,12 +38,9 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Global Floating Toast Container -->
-    <div class="toast-container-custom" id="toastContainer"></div>
-
     <div class="app-container">
         {% if user.is_authenticated %}
-            <!-- Collapsible Obsidian Sidebar -->
+            <!-- Collapsible Glassmorphic Sidebar -->
             <aside class="app-sidebar shadow-lg" id="appSidebar">
                 <div class="sidebar-header">
                     <a href="{% url 'core:home' %}" class="d-flex align-items-center gap-2 text-decoration-none">
@@ -52,11 +48,8 @@
                             <i class="bi bi-mortarboard-fill"></i>
                         </div>
                         <div>
-                            <div class="d-flex align-items-center gap-1">
-                                <span class="fs-5 fw-bold text-white tracking-tight">Algions</span>
-                                <span class="badge bg-primary text-white border border-primary-subtle px-1 py-0" style="font-size: 0.65rem;">SMS</span>
-                            </div>
-                            <div class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.05em;">ENTERPRISE SUITE</div>
+                            <span class="fs-5 fw-bold text-white tracking-tight">Algions</span>
+                            <span class="badge bg-primary text-white border border-primary-subtle px-1 py-0 ms-1" style="font-size: 0.65rem;">SMS</span>
                         </div>
                     </a>
                 </div>
@@ -87,7 +80,7 @@
                             <i class="bi bi-person-badge-fill"></i>
                             <span>Teachers Directory</span>
                         </a>
-                        <a href="{% url 'academics:students_list' %}" class="sidebar-link {% if 'students' in request.path and not 'detail' in request.path %}active{% endif %}">
+                        <a href="{% url 'academics:students_list' %}" class="sidebar-link {% if 'students' in request.path %}active{% endif %}">
                             <i class="bi bi-people-fill"></i>
                             <span>Students Roster</span>
                         </a>
@@ -156,21 +149,20 @@
                     <div class="sidebar-section-title">Developer & APIs</div>
                     <a href="/api/docs/" target="_blank" class="sidebar-link">
                         <i class="bi bi-code-slash text-info"></i>
-                        <span>Swagger 3.0 Docs</span>
+                        <span>Swagger Docs</span>
                     </a>
                 </div>
 
                 <div class="sidebar-footer">
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center gap-2">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs position-relative" 
-                                 style="width: 36px; height: 36px; background: {% if user.is_admin_role %}#ef4444{% elif user.is_teacher_role %}#6366f1{% else %}#10b981{% endif %}; font-size: 0.85rem;">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-xs" 
+                                 style="width: 32px; height: 32px; background: {% if user.is_admin_role %}#ef4444{% elif user.is_teacher_role %}#6366f1{% else %}#10b981{% endif %}; font-size: 0.8rem;">
                                 {{ user.first_name|first|default:user.username|first|upper }}
-                                <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle" style="width: 10px; height: 10px;"></span>
                             </div>
                             <div class="text-truncate" style="max-width: 120px;">
                                 <div class="text-white small fw-bold text-truncate">{{ user.get_full_name|default:user.username }}</div>
-                                <div class="text-white-50" style="font-size: 0.68rem;">{{ user.get_role_display }}</div>
+                                <div class="text-white-50" style="font-size: 0.65rem;">{{ user.get_role_display }}</div>
                             </div>
                         </div>
                         <a href="{% url 'accounts:logout' %}" class="text-secondary text-hover-white p-1" title="Sign Out">
@@ -192,7 +184,7 @@
                         </button>
                     {% else %}
                         <a class="navbar-brand fw-bold d-flex align-items-center gap-2 text-decoration-none" href="{% url 'core:home' %}">
-                            <div class="sidebar-logo-icon" style="width: 34px; height: 34px;">
+                            <div class="sidebar-logo-icon" style="width: 32px; height: 32px;">
                                 <i class="bi bi-mortarboard-fill fs-6"></i>
                             </div>
                             <span class="fs-5 fw-bold text-dark tracking-tight">Algions SMS</span>
@@ -205,31 +197,17 @@
                         <span>Search student, action, page...</span>
                         <span class="search-shortcut-badge ms-auto">Ctrl + K</span>
                     </div>
-
-                    <!-- Live School Clock Widget -->
-                    <div id="liveClock" class="d-none d-xl-flex align-items-center gap-2 text-muted small fw-semibold font-monospace bg-light px-3 py-1 rounded-pill border">
-                        <i class="bi bi-clock-history text-primary"></i>
-                        <span id="currentTimeDisplay">--:--:--</span>
-                    </div>
                 </div>
 
                 <!-- Right Side Actions & Persona Switcher -->
                 <div class="d-flex align-items-center gap-3">
-                    <!-- Keyboard Shortcuts Quick Trigger -->
-                    <button class="btn btn-light btn-sm rounded-circle border p-0 d-flex align-items-center justify-content-center" 
-                            style="width: 32px; height: 32px;" 
-                            title="Keyboard Shortcuts (?)" 
-                            onclick="openShortcutsModal()">
-                        <i class="bi bi-keyboard text-muted"></i>
-                    </button>
-
                     <!-- Interactive Persona Switcher Pill -->
                     <div class="dropdown">
                         <button class="btn btn-outline-dark btn-sm rounded-pill px-3 dropdown-toggle d-flex align-items-center gap-2 shadow-xs" type="button" data-bs-toggle="dropdown">
                             <span class="pulse-indicator"></span>
                             <span class="small fw-semibold">Switch Persona</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="border-radius: 12px; min-width: 230px;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="border-radius: 12px; min-width: 220px;">
                             <li class="dropdown-header text-uppercase small text-muted">Instant Evaluation Switch</li>
                             <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'admin' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Admin (Arthur)</a></li>
                             <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'teacher' %}"><i class="bi bi-person-badge me-2 text-primary"></i>Teacher 1 (Sarah)</a></li>
@@ -252,9 +230,6 @@
 
             <!-- Page Body Content -->
             <div class="p-4 flex-grow-1">
-                <!-- Breadcrumbs row -->
-                {% block breadcrumb %}{% endblock %}
-
                 {% if messages %}
                     <div class="row mb-3">
                         <div class="col-12">
@@ -272,7 +247,7 @@
                 {% block content %}{% endblock %}
             </div>
 
-            <!-- Modern Footer -->
+            <!-- Footer -->
             <footer class="footer mt-auto py-3 bg-white border-top text-muted small px-4">
                 <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                     <div>
@@ -298,48 +273,32 @@
                     <span class="badge bg-light text-dark border font-monospace small">ESC</span>
                 </div>
                 <div class="command-list" id="commandList">
-                    <div class="px-3 py-2 small text-uppercase fw-bold text-muted" style="font-size: 0.7rem;">Quick Navigation</div>
+                    <div class="px-3 py-2 small text-uppercase fw-bold text-muted" style="font-size: 0.7rem;">Quick Jumps</div>
                     <a href="{% url 'core:home' %}" class="command-item">
-                        <span><i class="bi bi-grid-fill text-primary me-2"></i>System Overview & Evaluation Hub</span>
+                        <span><i class="bi bi-grid-fill text-primary me-2"></i>System Overview</span>
                         <span class="badge bg-light text-dark border small font-monospace">Home</span>
                     </a>
                     <a href="{% url 'core:admin_dashboard' %}" class="command-item">
                         <span><i class="bi bi-speedometer2 text-danger me-2"></i>Admin Command Center</span>
                         <span class="badge bg-light text-dark border small font-monospace">Admin</span>
                     </a>
-                    <a href="{% url 'academics:classes_list' %}" class="command-item">
-                        <span><i class="bi bi-diagram-3-fill text-primary me-2"></i>Classes & Sections Matrix</span>
-                        <span class="badge bg-light text-dark border small font-monospace">Classes</span>
-                    </a>
-                    <a href="{% url 'academics:students_list' %}" class="command-item">
-                        <span><i class="bi bi-people-fill text-primary me-2"></i>Students Roster Directory</span>
-                        <span class="badge bg-light text-dark border small font-monospace">Students</span>
-                    </a>
                     <a href="{% url 'attendance:record_attendance' %}" class="command-item">
                         <span><i class="bi bi-calendar2-check-fill text-success me-2"></i>Record Daily Attendance</span>
                         <span class="badge bg-light text-dark border small font-monospace">Attendance</span>
                     </a>
-                    <a href="{% url 'attendance:summary_report' %}" class="command-item">
-                        <span><i class="bi bi-bar-chart-fill text-success me-2"></i>Attendance Analytics & Summaries</span>
-                        <span class="badge bg-light text-dark border small font-monospace">Analytics</span>
-                    </a>
                     <a href="{% url 'examinations:teacher_marks_entry' %}" class="command-item">
                         <span><i class="bi bi-pencil-square text-warning me-2"></i>Evaluation Gradebook (Marks Entry)</span>
                         <span class="badge bg-light text-dark border small font-monospace">Exams</span>
-                    </a>
-                    <a href="{% url 'finance:invoices_list' %}" class="command-item">
-                        <span><i class="bi bi-receipt-cutoff text-info me-2"></i>Billing & Fee Statements</span>
-                        <span class="badge bg-light text-dark border small font-monospace">Billing</span>
                     </a>
                     <a href="{% url 'finance:ledger_report' %}" class="command-item">
                         <span><i class="bi bi-journal-check text-info me-2"></i>Fee Ledger Reconciliation Report</span>
                         <span class="badge bg-light text-dark border small font-monospace">Finance</span>
                     </a>
                     <a href="{% url 'audit:logs_list' %}" class="command-item">
-                        <span><i class="bi bi-shield-check text-secondary me-2"></i>System Security Audit Trail</span>
+                        <span><i class="bi bi-shield-check text-secondary me-2"></i>System Audit Trail</span>
                         <span class="badge bg-light text-dark border small font-monospace">Audit</span>
                     </a>
-                    <div class="px-3 py-2 mt-2 small text-uppercase fw-bold text-muted border-top" style="font-size: 0.7rem;">Instant Switch Personas</div>
+                    <div class="px-3 py-2 mt-2 small text-uppercase fw-bold text-muted border-top" style="font-size: 0.7rem;">Switch Personas</div>
                     <a href="{% url 'accounts:demo_switch' 'admin' %}" class="command-item">
                         <span><i class="bi bi-shield-lock me-2 text-danger"></i>Switch to Admin (Arthur Pendleton)</span>
                     </a>
@@ -357,95 +316,11 @@
         </div>
     </div>
 
-    <!-- Keyboard Shortcuts Modal -->
-    <div class="modal fade" id="shortcutsModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content shadow-lg border-0" style="border-radius: var(--radius-lg);">
-                <div class="modal-header border-bottom">
-                    <h5 class="modal-title fw-bold"><i class="bi bi-keyboard text-primary me-2"></i>Keyboard Shortcuts</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-body fw-medium">Open Command Palette</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">Ctrl + K</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-body fw-medium">Open Shortcuts Dialog</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">?</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-body fw-medium">Print Report Card / Receipt</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">Ctrl + P</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-body fw-medium">Close Modal</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">ESC</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Global Application Scripts -->
+    <!-- Global Command Palette & Copy Script -->
     <script>
-        // Live Clock
-        function updateLiveClock() {
-            const clockEl = document.getElementById('currentTimeDisplay');
-            if (clockEl) {
-                const now = new Date();
-                clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-            }
-        }
-        setInterval(updateLiveClock, 1000);
-        updateLiveClock();
-
-        // Custom Toast Notification System
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            if (!container) return;
-
-            const toast = document.createElement('div');
-            toast.className = `custom-toast toast-${type}`;
-            
-            let iconClass = 'bi-info-circle-fill text-info';
-            if (type === 'success') iconClass = 'bi-check-circle-fill text-success';
-            if (type === 'error') iconClass = 'bi-exclamation-triangle-fill text-danger';
-            if (type === 'warning') iconClass = 'bi-exclamation-circle-fill text-warning';
-
-            toast.innerHTML = `
-                <i class="bi ${iconClass} fs-5"></i>
-                <div class="flex-grow-1">${message}</div>
-                <button type="button" class="btn-close btn-close-white small ms-2" onclick="this.parentElement.remove()"></button>
-            `;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateY(10px)';
-                toast.style.transition = 'all 0.3s ease';
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
-
-        // Modern Copy to Clipboard with Toast
-        function copyToClipboard(text, label = 'Admission Number') {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(text).then(function() {
-                    showToast(`${label} copied: <strong>${text}</strong>`, 'success');
-                }).catch(function() {
-                    showToast(`Copied: ${text}`, 'success');
-                });
-            } else {
-                showToast(`Copied: ${text}`, 'success');
-            }
-        }
-
-        // Command Palette
         function openCommandPalette() {
             const modalEl = document.getElementById('commandPaletteModal');
             if (modalEl) {
@@ -455,29 +330,15 @@
             }
         }
 
-        function openShortcutsModal() {
-            const modalEl = document.getElementById('shortcutsModal');
-            if (modalEl) {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            }
-        }
-
-        // Global Hotkeys
+        // Hotkey: Ctrl+K or Cmd+K
         document.addEventListener('keydown', function(e) {
-            // Ctrl + K or Cmd + K
-            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 openCommandPalette();
             }
-            // Press '?' (Shift + /)
-            if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
-                e.preventDefault();
-                openShortcutsModal();
-            }
         });
 
-        // Command Input Filter
+        // Command input search filter
         const cmdInput = document.getElementById('commandInput');
         if (cmdInput) {
             cmdInput.addEventListener('input', function() {
@@ -487,6 +348,13 @@
                     const text = item.textContent.toLowerCase();
                     item.style.display = text.includes(query) ? 'flex' : 'none';
                 });
+            });
+        }
+
+        // Copy Badge Handler
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('Copied to clipboard: ' + text);
             });
         }
     </script>

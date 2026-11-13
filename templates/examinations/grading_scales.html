@@ -19,12 +19,14 @@
 <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
     <div>
         <h2 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
-            <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 42px; height: 42px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+            <span class="rounded-3 d-flex align-items-center justify-content-center text-white"
+                style="width: 42px; height: 42px; background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
                 <i class="bi bi-sliders fs-5"></i>
             </span>
             <span>Standardized Grading Scales & Thresholds</span>
         </h2>
-        <p class="text-muted mb-0">Configurable grading schemes mapping percentage intervals to GPA grade points and qualitative remarks.</p>
+        <p class="text-muted mb-0">Configurable grading schemes mapping percentage intervals to GPA grade points and
+            qualitative remarks.</p>
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="{% url 'examinations:exams_list' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3 shadow-xs">
@@ -36,10 +38,12 @@
 <!-- Visual Grade Spectrum Banner -->
 <div class="card card-premium p-4 mb-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <span class="small fw-bold text-uppercase text-secondary" style="font-size: 0.72rem; letter-spacing: 0.05em;">Academic Grade Spectrum</span>
+        <span class="small fw-bold text-uppercase text-secondary"
+            style="font-size: 0.72rem; letter-spacing: 0.05em;">Academic Grade Spectrum</span>
         <span class="small text-muted font-monospace">4.0 Max GPA Scale</span>
     </div>
-    <div class="progress" style="height: 18px; border-radius: var(--radius-pill); overflow: hidden; background: #e2e8f0;">
+    <div class="progress"
+        style="height: 18px; border-radius: var(--radius-pill); overflow: hidden; background: #e2e8f0;">
         <div class="progress-bar bg-success" style="width: 15%;" title="A+ (90-100%)">A+</div>
         <div class="progress-bar bg-primary" style="width: 15%;" title="A (80-89%)">A</div>
         <div class="progress-bar bg-info" style="width: 15%;" title="B (70-79%)">B</div>
@@ -58,88 +62,90 @@
 
 <div class="row g-4">
     {% for scale in scales %}
-        <div class="col-lg-12">
-            <div class="card card-premium">
-                <div class="card-header-clean bg-light">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-award-fill text-primary fs-5"></i>
-                        <h5 class="fw-bold mb-0 text-dark">{{ scale.name }}</h5>
-                    </div>
-                    <span class="badge badge-subtle-primary rounded-pill px-3 py-1 font-monospace">
-                        {{ scale.rules.count }} Configured Thresholds
-                    </span>
+    <div class="col-lg-12">
+        <div class="card card-premium">
+            <div class="card-header-clean bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-award-fill text-primary fs-5"></i>
+                    <h5 class="fw-bold mb-0 text-dark">{{ scale.name }}</h5>
                 </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive">
-                        <table class="table table-modern align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Letter Grade</th>
-                                    <th>Percentage Interval</th>
-                                    <th>Grade Point (GPA)</th>
-                                    <th>Academic Descriptor / Remarks</th>
-                                    <th>Visual Band</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for rule in scale.rules.all %}
-                                    <tr>
-                                        <td>
-                                            <span class="badge 
+                <span class="badge badge-subtle-primary rounded-pill px-3 py-1 font-monospace">
+                    {{ scale.rules.count }} Configured Thresholds
+                </span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-modern align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Letter Grade</th>
+                                <th>Percentage Interval</th>
+                                <th>Grade Point (GPA)</th>
+                                <th>Academic Descriptor / Remarks</th>
+                                <th>Visual Band</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rule in scale.rules.all %}
+                            <tr>
+                                <td>
+                                    <span
+                                        class="badge 
                                                 {% if rule.grade == 'A+' or rule.grade == 'A' %}badge-subtle-success
                                                 {% elif rule.grade == 'B' %}badge-subtle-primary
                                                 {% elif rule.grade == 'C' %}badge-subtle-warning
                                                 {% elif rule.grade == 'D' %}badge-subtle-info
                                                 {% else %}badge-subtle-danger{% endif %} rounded-pill px-3 py-1 fw-bold fs-6">
-                                                {{ rule.grade }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="fw-bold text-dark font-monospace">{{ rule.min_percentage }}% - {{ rule.max_percentage }}%</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark border font-monospace px-2 py-1">
-                                                {{ rule.grade_point }} pts
-                                            </span>
-                                        </td>
-                                        <td class="text-secondary fw-medium">
-                                            {{ rule.remarks|default:"Standard academic performance mark" }}
-                                        </td>
-                                        <td style="width: 140px;">
-                                            <div class="progress" style="height: 6px;">
-                                                <div class="progress-bar 
+                                        {{ rule.grade }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-dark font-monospace">{{ rule.min_percentage }}% - {{
+                                        rule.max_percentage }}%</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border font-monospace px-2 py-1">
+                                        {{ rule.grade_point }} pts
+                                    </span>
+                                </td>
+                                <td class="text-secondary fw-medium">
+                                    {{ rule.remarks|default:"Standard academic performance mark" }}
+                                </td>
+                                <td style="width: 140px;">
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar 
                                                     {% if rule.grade == 'A+' or rule.grade == 'A' %}bg-success
                                                     {% elif rule.grade == 'B' %}bg-primary
                                                     {% elif rule.grade == 'C' %}bg-warning
                                                     {% elif rule.grade == 'D' %}bg-secondary
-                                                    {% else %}bg-danger{% endif %}" 
-                                                    style="width: {{ rule.max_percentage }}%;"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="5" class="text-center text-muted py-4">No rules defined in this scale.</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
+                                                    {% else %}bg-danger{% endif %}"
+                                            style="width: {{ rule.max_percentage }}%;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">No rules defined in this scale.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
+    </div>
     {% empty %}
-        <div class="col-12">
-            <div class="empty-state-box">
-                <div class="empty-state-icon">
-                    <i class="bi bi-sliders"></i>
-                </div>
-                <h4 class="fw-bold mb-2">No Grading Scales Configured</h4>
-                <p class="text-muted mx-auto mb-3" style="max-width: 480px;">
-                    Execute the database seeder to populate the standardized 4.0 grading ruleset.
-                </p>
+    <div class="col-12">
+        <div class="empty-state-box">
+            <div class="empty-state-icon">
+                <i class="bi bi-sliders"></i>
             </div>
+            <h4 class="fw-bold mb-2">No Grading Scales Configured</h4>
+            <p class="text-muted mx-auto mb-3" style="max-width: 480px;">
+                Execute the database seeder to populate the standardized 4.0 grading ruleset.
+            </p>
         </div>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

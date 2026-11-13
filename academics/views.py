@@ -56,7 +56,7 @@ def students_list(request):
             student__admission_number__icontains=search_query
         )
 
-    paginator = Paginator(queryset.distinct().order_by('section__class_grade__name', 'section__name', 'roll_number', 'student__admission_number'), 20)
+    paginator = Paginator(queryset.distinct(), 20)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
