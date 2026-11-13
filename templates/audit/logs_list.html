@@ -1,89 +1,99 @@
 {% extends 'base.html' %}
 
-{% block title %}Audit Trail | School Management System{% endblock %}
+{% block title %}System Audit Trail | Algions SMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i>Audit Trail & Event Log</h2>
-        <p class="text-muted mb-0">Immutable records of material operations, marks updates, and financial payments.</p>
+        <h2 class="fw-bold mb-1"><i class="bi bi-shield-check text-primary me-2"></i>System Audit Trail & Event Log</h2>
+        <p class="text-muted small mb-0">Immutable records of material business actions, grade updates, and financial payments.</p>
     </div>
+    <span class="badge badge-subtle-primary px-3 py-2 rounded-pill">
+        {{ page_obj.paginator.count }} Total Audit Records
+    </span>
 </div>
 
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body">
-        <form method="get" class="row g-2 align-items-center">
-            <div class="col-md-5">
-                <input type="text" name="q" class="form-control" placeholder="Search by object or details..." value="{{ search_query }}">
+<!-- Search & Filter Card -->
+<div class="card card-premium p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-5">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control" placeholder="Search by target or details..." value="{{ search_query }}">
             </div>
-            <div class="col-md-4">
-                <select name="action" class="form-select">
-                    <option value="">All Action Types</option>
-                    {% for code, label in action_choices %}
-                        <option value="{{ code }}" {% if action_filter == code %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-3 d-flex gap-2">
-                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-filter me-1"></i>Filter</button>
-                <a href="{% url 'audit:logs_list' %}" class="btn btn-outline-secondary">Reset</a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="card shadow-sm border-0">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Timestamp</th>
-                        <th>Actor</th>
-                        <th>Action</th>
-                        <th>Target Model</th>
-                        <th>Target Object</th>
-                        <th>Details</th>
-                        <th>IP Address</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for log in page_obj %}
-                        <tr>
-                            <td class="small text-muted">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
-                            <td>
-                                {% if log.actor %}
-                                    <span class="badge bg-secondary-subtle text-dark border">{{ log.actor.username }}</span>
-                                {% else %}
-                                    <span class="badge bg-light text-muted border">System</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <span class="badge 
-                                    {% if log.action == 'CREATE' %}bg-success
-                                    {% elif log.action == 'UPDATE' or log.action == 'MARKS_ENTRY' %}bg-primary
-                                    {% elif log.action == 'DELETE' %}bg-danger
-                                    {% elif log.action == 'PAYMENT' %}bg-warning text-dark
-                                    {% else %}bg-info text-dark{% endif %}">
-                                    {{ log.get_action_display }}
-                                </span>
-                            </td>
-                            <td class="fw-semibold">{{ log.model_name }}</td>
-                            <td><code>{{ log.object_repr|truncatechars:40 }}</code></td>
-                            <td class="small">{{ log.details|default:"-" }}</td>
-                            <td class="small text-muted">{{ log.ip_address|default:"127.0.0.1" }}</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">
-                                <i class="bi bi-journal-x fs-3 d-block mb-2"></i>
-                                No audit records found.
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
+        <div class="col-md-4">
+            <select name="action" class="form-select">
+                <option value="">All Material Actions</option>
+                {% for code, label in action_choices %}
+                    <option value="{{ code }}" {% if action_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-primary-gradient w-100 rounded-pill"><i class="bi bi-filter me-1"></i>Filter</button>
+            <a href="{% url 'audit:logs_list' %}" class="btn btn-outline-secondary rounded-pill">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Table Card -->
+<div class="card card-premium overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-modern align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Actor Dossier</th>
+                    <th>Action Type</th>
+                    <th>Target Model</th>
+                    <th>Target Object</th>
+                    <th>Event Details</th>
+                    <th>Client IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in page_obj %}
+                    <tr>
+                        <td class="small text-muted font-monospace">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                        <td>
+                            {% if log.actor %}
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" 
+                                         style="width: 26px; height: 26px; background: #64748b; font-size: 0.7rem;">
+                                        {{ log.actor.username|first|upper }}
+                                    </div>
+                                    <span class="fw-semibold text-dark small">{{ log.actor.username }}</span>
+                                </div>
+                            {% else %}
+                                <span class="badge bg-light text-muted border">System</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if log.action == 'CREATE' %}badge-subtle-success
+                                {% elif log.action == 'UPDATE' or log.action == 'MARKS_ENTRY' %}badge-subtle-primary
+                                {% elif log.action == 'DELETE' %}badge-subtle-danger
+                                {% elif log.action == 'PAYMENT' %}badge-subtle-warning
+                                {% else %}bg-info-subtle text-info border border-info-subtle{% endif %} px-2 py-1">
+                                {{ log.get_action_display }}
+                            </span>
+                        </td>
+                        <td class="fw-semibold text-dark">{{ log.model_name }}</td>
+                        <td><code class="small text-secondary">{{ log.object_repr|truncatechars:38 }}</code></td>
+                        <td class="small text-muted">{{ log.details|default:"-" }}</td>
+                        <td class="small text-muted font-monospace">{{ log.ip_address|default:"127.0.0.1" }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">
+                            <i class="bi bi-shield-x fs-1 d-block mb-2 text-secondary"></i>
+                            No audit records found.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -91,14 +101,13 @@
     <nav class="mt-4">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&action={{ action_filter }}">Previous</a></li>
+                <li class="page-item"><a class="page-link rounded-pill me-1" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&action={{ action_filter }}">Previous</a></li>
             {% endif %}
-            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            <li class="page-item disabled"><span class="page-link rounded-pill me-1">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
             {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&action={{ action_filter }}">Next</a></li>
+                <li class="page-item"><a class="page-link rounded-pill" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&action={{ action_filter }}">Next</a></li>
             {% endif %}
         </ul>
     </nav>
 {% endif %}
 {% endblock %}
-

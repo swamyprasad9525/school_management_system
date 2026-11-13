@@ -1,83 +1,104 @@
 {% extends 'base.html' %}
 
-{% block title %}Parent & Student Portal | School Management System{% endblock %}
+{% block title %}Family Portal | Algions SMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-people text-primary me-2"></i>Guardian & Student Portal</h2>
-        <p class="text-muted mb-0">Welcome, {{ user.get_full_name|default:user.username }}. Review your linked children's academic performance, attendance, and fee statements.</p>
+        <div class="d-flex align-items-center gap-2 mb-1">
+            <h2 class="fw-bold mb-0">Parent & Student Portal</h2>
+            <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 small">
+                <i class="bi bi-shield-check me-1"></i>Privacy Isolated
+            </span>
+        </div>
+        <p class="text-muted small mb-0">Welcome, {{ user.get_full_name|default:user.username }}. Review confidential academic and financial records for your linked family members.</p>
     </div>
 </div>
 
-<div class="row g-4">
+<div class="d-flex flex-column gap-4">
     {% for item in children_data %}
         {% with student=item.student %}
-        <div class="col-12">
-            <div class="card shadow-sm border-0 mb-3">
-                <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="rounded-circle bg-primary-subtle text-primary d-flex align-items-center justify-content-center" style="width: 48px; height: 48px; font-size: 1.5rem;">
-                            <i class="bi bi-person"></i>
-                        </div>
-                        <div>
-                            <h4 class="fw-bold mb-0 text-dark">{{ student.user.get_full_name }}</h4>
-                            <span class="text-muted small">Admission No: <code>{{ student.admission_number }}</code> &bull; Enrolled in <strong>{{ item.enrollment.section|default:"Unassigned" }}</strong></span>
+        <div class="card card-premium overflow-hidden">
+            <!-- Student Header Banner -->
+            <div class="p-4 bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                         style="width: 52px; height: 52px; background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%); font-size: 1.4rem;">
+                        {{ student.user.first_name|first }}
+                    </div>
+                    <div>
+                        <h4 class="fw-bold mb-0 text-dark">{{ student.user.get_full_name }}</h4>
+                        <div class="text-muted small">
+                            Admission No: <code class="fw-bold text-dark">{{ student.admission_number }}</code> &bull; 
+                            Class & Section: <span class="badge bg-white text-dark border">{{ item.enrollment.section|default:"Unassigned" }}</span>
                         </div>
                     </div>
-                    <div class="d-flex gap-2">
-                        <a href="{% url 'examinations:student_report_card' student.id %}" class="btn btn-outline-primary btn-sm">
-                            <i class="bi bi-file-earmark-text me-1"></i>Official Report Card
-                        </a>
-                        <a href="{% url 'academics:student_detail' student.id %}" class="btn btn-outline-secondary btn-sm">
-                            <i class="bi bi-person-lines-fill me-1"></i>Full Profile
-                        </a>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'examinations:student_report_card' student.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                        <i class="bi bi-file-earmark-text me-1"></i>Official Report Card
+                    </a>
+                    <a href="{% url 'academics:student_detail' student.id %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                        <i class="bi bi-person-lines-fill me-1"></i>Full Dossier
+                    </a>
+                </div>
+            </div>
+
+            <!-- Student Content Body -->
+            <div class="p-4">
+                <div class="row g-4 mb-4">
+                    <!-- Attendance Progress -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-white shadow-xs h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="small fw-semibold text-muted text-uppercase">Classroom Attendance</span>
+                                <span class="badge {% if item.attendance_rate >= 85 %}badge-subtle-success{% elif item.attendance_rate >= 75 %}badge-subtle-warning{% else %}badge-subtle-danger{% endif %} rounded-pill px-3">
+                                    {{ item.attendance_rate }}% Overall
+                                </span>
+                            </div>
+                            <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress-bar {% if item.attendance_rate >= 85 %}bg-success{% elif item.attendance_rate >= 75 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                     role="progressbar" style="width: {{ item.attendance_rate }}%;"></div>
+                            </div>
+                            <div class="d-flex justify-content-between small text-muted">
+                                <span>Present: <strong class="text-success">{{ item.present_attendance }} days</strong></span>
+                                <span>Total Sessions: <strong>{{ item.total_attendance }} days</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Fee Balance Status -->
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-white shadow-xs h-100 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="small fw-semibold text-muted text-uppercase">Outstanding Fee Balance</span>
+                                <h3 class="fw-bold mt-1 mb-0 {% if item.total_due > 0 %}text-danger{% else %}text-success{% endif %}">
+                                    ${{ item.total_due }}
+                                </h3>
+                                <div class="small text-muted">{{ item.invoices.count }} billing statements recorded</div>
+                            </div>
+                            <div class="rounded-circle p-3 {% if item.total_due > 0 %}bg-danger-subtle text-danger{% else %}bg-success-subtle text-success{% endif %} fs-4">
+                                <i class="bi {% if item.total_due > 0 %}bi-exclamation-circle{% else %}bi-check2-circle{% endif %}"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-body p-4">
-                    <!-- Key Student Indicators -->
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="p-3 border rounded bg-light d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small text-uppercase fw-semibold">Attendance Health</span>
-                                    <h3 class="fw-bold text-success mt-1 mb-0">{{ item.attendance_rate }}%</h3>
-                                    <span class="small text-muted">{{ item.present_attendance }} of {{ item.total_attendance }} days recorded</span>
-                                </div>
-                                <div class="rounded-circle bg-success-subtle text-success p-3">
-                                    <i class="bi bi-calendar-check fs-4"></i>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="p-3 border rounded bg-light d-flex justify-content-between align-items-center">
-                                <div>
-                                    <span class="text-muted small text-uppercase fw-semibold">Fee Balance Due</span>
-                                    <h3 class="fw-bold {% if item.total_due > 0 %}text-danger{% else %}text-success{% endif %} mt-1 mb-0">
-                                        ${{ item.total_due }}
-                                    </h3>
-                                    <span class="small text-muted">{{ item.invoices.count }} total billing statements</span>
-                                </div>
-                                <div class="rounded-circle {% if item.total_due > 0 %}bg-danger-subtle text-danger{% else %}bg-success-subtle text-success{% endif %} p-3">
-                                    <i class="bi bi-credit-card fs-4"></i>
-                                </div>
-                            </div>
-                        </div>
+                <!-- Fee Invoices Sub-table -->
+                <div class="border rounded-3 overflow-hidden">
+                    <div class="p-3 bg-light border-bottom d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold mb-0 text-dark"><i class="bi bi-receipt me-2 text-primary"></i>Fee Statements & Payment History</h6>
+                        <span class="small text-muted">Simulated payments with ledger reconciliation</span>
                     </div>
-
-                    <!-- Fee Invoices Sub-table -->
-                    <h6 class="fw-bold text-dark mb-3"><i class="bi bi-receipt me-2 text-primary"></i>Fee Statements & Payment Status</h6>
                     <div class="table-responsive">
-                        <table class="table table-sm table-hover align-middle mb-0">
-                            <thead class="table-light">
+                        <table class="table table-modern align-middle mb-0">
+                            <thead>
                                 <tr>
                                     <th>Invoice #</th>
                                     <th>Fee Description</th>
-                                    <th>Total Due</th>
-                                    <th>Paid</th>
-                                    <th>Remaining Balance</th>
+                                    <th>Total Billed</th>
+                                    <th>Paid to Date</th>
+                                    <th>Remaining Due</th>
                                     <th>Status</th>
                                     <th class="text-end">Action</th>
                                 </tr>
@@ -88,28 +109,34 @@
                                         <td><code>{{ inv.invoice_number }}</code></td>
                                         <td class="fw-semibold">{{ inv.fee_structure.category.name }}</td>
                                         <td>${{ inv.total_amount }}</td>
-                                        <td class="text-success">${{ inv.paid_amount }}</td>
+                                        <td class="text-success fw-bold">${{ inv.paid_amount }}</td>
                                         <td class="fw-bold {% if inv.balance > 0 %}text-danger{% else %}text-muted{% endif %}">${{ inv.balance }}</td>
                                         <td>
-                                            <span class="badge {% if inv.status == 'PAID' %}bg-success{% elif inv.status == 'PARTIAL' %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                            <span class="badge {% if inv.status == 'PAID' %}badge-subtle-success{% elif inv.status == 'PARTIAL' %}badge-subtle-warning{% else %}badge-subtle-danger{% endif %} px-2 py-1">
                                                 {{ inv.get_status_display }}
                                             </span>
                                         </td>
                                         <td class="text-end">
                                             {% if inv.balance > 0 %}
-                                                <a href="{% url 'finance:record_payment' inv.id %}" class="btn btn-success btn-sm">
-                                                    <i class="bi bi-wallet2 me-1"></i>Pay ${{ inv.balance }}
+                                                <a href="{% url 'finance:record_payment' inv.id %}" class="btn btn-success btn-sm rounded-pill px-3">
+                                                    <i class="bi bi-credit-card me-1"></i>Settle ${{ inv.balance }}
                                                 </a>
                                             {% else %}
-                                                <span class="badge bg-light text-success border border-success-subtle">
-                                                    <i class="bi bi-check-circle me-1"></i>Paid
-                                                </span>
+                                                {% with last_payment=inv.payments.first %}
+                                                    {% if last_payment %}
+                                                        <a href="{% url 'finance:payment_receipt' last_payment.id %}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                                            <i class="bi bi-receipt me-1"></i>Receipt
+                                                        </a>
+                                                    {% else %}
+                                                        <span class="badge badge-subtle-success">Settled</span>
+                                                    {% endif %}
+                                                {% endwith %}
                                             {% endif %}
                                         </td>
                                     </tr>
                                 {% empty %}
                                     <tr>
-                                        <td colspan="7" class="text-center py-3 text-muted small">No pending invoices for this student.</td>
+                                        <td colspan="7" class="text-center py-4 text-muted small">No billing statements issued for this student.</td>
                                     </tr>
                                 {% endfor %}
                             </tbody>
@@ -120,12 +147,11 @@
         </div>
         {% endwith %}
     {% empty %}
-        <div class="col-12 text-center py-5 text-muted">
-            <i class="bi bi-people-fill fs-1 d-block mb-3"></i>
-            <h5>No linked student profiles found</h5>
-            <p>Your guardian account is not linked to any enrolled student records yet.</p>
+        <div class="card card-premium p-5 text-center text-muted">
+            <i class="bi bi-people-fill fs-1 d-block mb-3 text-secondary"></i>
+            <h5>No Linked Family Profiles</h5>
+            <p class="small">Your guardian account is not linked to any enrolled student records yet.</p>
         </div>
     {% endfor %}
 </div>
 {% endblock %}
-

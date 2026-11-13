@@ -4,16 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}School Management System{% endblock %}</title>
+    <title>{% block title %}Algions SMS | Enterprise School Management{% endblock %}</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Chart.js CDN for Interactive Data Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         @media print {
-            .navbar, .footer, .btn, .no-print, .alert {
+            .navbar, .footer, .btn, .no-print, .alert, .persona-pill {
                 display: none !important;
             }
             body {
@@ -21,72 +27,80 @@
                 color: #000 !important;
             }
             .card {
-                border: 1px solid #ccc !important;
+                border: 1px solid #ddd !important;
                 box-shadow: none !important;
             }
         }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-light d-flex flex-column min-vh-100">
-    <header class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+<body class="d-flex flex-column min-vh-100">
+    <!-- Glassmorphic Global Topbar -->
+    <header class="navbar navbar-expand-lg navbar-dark navbar-glass sticky-top shadow-sm py-2">
         <div class="container-fluid px-lg-4">
             <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="{% url 'core:home' %}">
-                <span class="fs-4">🏫</span>
-                <span>Algions SMS</span>
+                <div class="navbar-brand-logo">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div>
+                    <span class="fs-5 tracking-tight text-white">Algions</span>
+                    <span class="badge bg-primary text-white border border-primary-subtle px-1 py-0 ms-1" style="font-size: 0.65rem;">PRO</span>
+                </div>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
-                <span class="navbar-toggler-icon"></span>
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <i class="bi bi-list fs-3 text-light"></i>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-3 gap-1">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'core:home' %}"><i class="bi bi-house me-1"></i>Home</a>
+                        <a class="nav-link" href="{% url 'core:home' %}"><i class="bi bi-grid me-1"></i>Overview</a>
                     </li>
                     {% if user.is_authenticated %}
                         {% if user.is_admin_role %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:admin_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Admin Dashboard</a>
+                                <a class="nav-link" href="{% url 'core:admin_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Command Center</a>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-mortarboard me-1"></i>Academics
+                                    <i class="bi bi-book me-1"></i>Academics
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'academics:classes_list' %}">Classes & Sections</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'academics:subjects_list' %}">Subjects</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'academics:teachers_list' %}">Teachers</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'academics:students_list' %}">Students</a></li>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                                    <li><a class="dropdown-item" href="{% url 'academics:classes_list' %}"><i class="bi bi-diagram-3 me-2 text-primary"></i>Classes & Sections</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'academics:subjects_list' %}"><i class="bi bi-journal-bookmark me-2 text-info"></i>Subjects & Faculty</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'academics:teachers_list' %}"><i class="bi bi-person-badge me-2 text-warning"></i>Teachers Directory</a></li>
+                                    <li><hr class="dropdown-divider border-secondary"></li>
+                                    <li><a class="dropdown-item" href="{% url 'academics:students_list' %}"><i class="bi bi-person-lines-fill me-2 text-success"></i>Students Roster</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-calendar-check me-1"></i>Attendance
+                                    <i class="bi bi-calendar2-check me-1"></i>Attendance
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'attendance:sessions_list' %}">Daily Sessions</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'attendance:summary_report' %}">Class Summaries</a></li>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                                    <li><a class="dropdown-item" href="{% url 'attendance:sessions_list' %}"><i class="bi bi-clock-history me-2 text-primary"></i>Daily Sessions</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'attendance:record_attendance' %}"><i class="bi bi-plus-circle me-2 text-success"></i>Take Attendance</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'attendance:summary_report' %}"><i class="bi bi-bar-chart me-2 text-info"></i>Class Analytics</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-file-earmark-text me-1"></i>Examinations
+                                    <i class="bi bi-award me-1"></i>Assessments
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'examinations:exams_list' %}">Exams & Subjects</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'examinations:grading_scales' %}">Grading Rules</a></li>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                                    <li><a class="dropdown-item" href="{% url 'examinations:exams_list' %}"><i class="bi bi-file-earmark-text me-2 text-primary"></i>Exams Schedule</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'examinations:grading_scales' %}"><i class="bi bi-sliders me-2 text-warning"></i>Grading Thresholds</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                                    <i class="bi bi-cash-stack me-1"></i>Finance
+                                    <i class="bi bi-wallet2 me-1"></i>Finance
                                 </a>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{% url 'finance:invoices_list' %}">Fee Invoices</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'finance:fee_structures' %}">Fee Structures</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'finance:ledger_report' %}">Fee Ledger Reconciliation</a></li>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow border-secondary">
+                                    <li><a class="dropdown-item" href="{% url 'finance:invoices_list' %}"><i class="bi bi-receipt me-2 text-primary"></i>Billing Invoices</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'finance:fee_structures' %}"><i class="bi bi-layers me-2 text-info"></i>Fee Structures</a></li>
+                                    <li><a class="dropdown-item" href="{% url 'finance:ledger_report' %}"><i class="bi bi-journal-check me-2 text-success"></i>Reconcile Ledger</a></li>
                                 </ul>
                             </li>
                             <li class="nav-item">
@@ -94,27 +108,27 @@
                             </li>
                         {% elif user.is_teacher_role %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:teacher_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Teacher Portal</a>
+                                <a class="nav-link" href="{% url 'core:teacher_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Faculty Portal</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'attendance:record_attendance' %}"><i class="bi bi-calendar-check me-1"></i>Record Attendance</a>
+                                <a class="nav-link" href="{% url 'attendance:record_attendance' %}"><i class="bi bi-calendar2-check me-1"></i>Record Attendance</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'examinations:teacher_marks_entry' %}"><i class="bi bi-pencil-square me-1"></i>Marks Entry</a>
                             </li>
                         {% elif user.is_guardian_role or user.is_student_role %}
                             <li class="nav-item">
-                                <a class="nav-link" href="{% url 'core:guardian_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Parent / Student Portal</a>
+                                <a class="nav-link" href="{% url 'core:guardian_dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Guardian Portal</a>
                             </li>
                         {% endif %}
                     {% endif %}
                     
-                    <!-- Reviewer Demo Persona Switcher -->
+                    <!-- Reviewer Demo Persona Switcher Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-warning fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-arrow-repeat me-1"></i>Switch Persona
+                        <a class="nav-link dropdown-toggle text-warning fw-semibold persona-pill" href="#" role="button" data-bs-toggle="dropdown">
+                            <span class="pulse-indicator me-1"></span>Persona Switcher
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-dark shadow">
+                        <ul class="dropdown-menu dropdown-menu-dark shadow border-warning">
                             <li class="dropdown-header text-uppercase small text-muted">Evaluation Quick-Switch</li>
                             <li><a class="dropdown-item" href="{% url 'accounts:demo_switch' 'admin' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Admin (Full Control)</a></li>
                             <li><a class="dropdown-item" href="{% url 'accounts:demo_switch' 'teacher' %}"><i class="bi bi-person-badge me-2 text-primary"></i>Teacher 1 (Class 10-A)</a></li>
@@ -123,23 +137,30 @@
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link text-info" href="/api/docs/" target="_blank"><i class="bi bi-code-slash me-1"></i>API Docs</a>
+                        <a class="nav-link text-info" href="/api/docs/" target="_blank"><i class="bi bi-code-slash me-1"></i>Swagger Docs</a>
                     </li>
                 </ul>
 
+                <!-- User Profile & Action Menu -->
                 <div class="d-flex align-items-center gap-3">
                     {% if user.is_authenticated %}
-                        <span class="badge bg-secondary px-2 py-1">
-                            <i class="bi bi-person-badge me-1"></i>{{ user.get_role_display }}
-                        </span>
-                        <span class="text-light small fw-semibold">
-                            {{ user.get_full_name|default:user.username }}
-                        </span>
-                        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light btn-sm">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-sm" 
+                                 style="width: 34px; height: 34px; background: {% if user.is_admin_role %}#ef4444{% elif user.is_teacher_role %}#6366f1{% else %}#10b981{% endif %}; font-size: 0.85rem;">
+                                {{ user.first_name|first|default:user.username|first|upper }}
+                            </div>
+                            <div class="d-none d-md-block text-start">
+                                <div class="text-white fw-semibold small" style="line-height: 1.1;">{{ user.get_full_name|default:user.username }}</div>
+                                <span class="badge {% if user.is_admin_role %}bg-danger{% elif user.is_teacher_role %}bg-primary{% else %}bg-success{% endif %}" style="font-size: 0.65rem;">
+                                    {{ user.get_role_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light btn-sm px-3 rounded-pill">
                             <i class="bi bi-box-arrow-right me-1"></i>Sign Out
                         </a>
                     {% else %}
-                        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-sm px-3">
+                        <a href="{% url 'accounts:login' %}" class="btn btn-primary-gradient btn-sm px-4 rounded-pill">
                             <i class="bi bi-box-arrow-in-right me-1"></i>Sign In
                         </a>
                     {% endif %}
@@ -148,13 +169,15 @@
         </div>
     </header>
 
-    <main class="flex-grow-1 container-fluid px-lg-4 py-4">
+    <!-- Main Dynamic Content Wrapper -->
+    <main class="flex-grow-1 container-fluid px-lg-4 py-4 animate-fade-in">
         {% if messages %}
             <div class="row mb-3">
                 <div class="col-12">
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm" role="alert">
-                            {{ message }}
+                        <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center gap-2 rounded-3" role="alert">
+                            <i class="bi {% if message.tags == 'success' %}bi-check-circle-fill text-success{% elif message.tags == 'error' %}bi-exclamation-triangle-fill text-danger{% else %}bi-info-circle-fill text-primary{% endif %} fs-5"></i>
+                            <div class="flex-grow-1">{{ message }}</div>
                             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                         </div>
                     {% endfor %}
@@ -165,20 +188,21 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="footer mt-auto py-3 bg-white border-top text-center text-muted small">
-        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between align-items-center">
+    <!-- Professional Enterprise Footer -->
+    <footer class="footer mt-auto py-3 bg-white border-top text-muted small">
+        <div class="container-fluid px-lg-4 d-flex flex-wrap justify-content-between align-items-center gap-2">
             <div>
-                &copy; {% now "Y" %} <strong>Algions AI Labs</strong> &bull; School Management System
+                &copy; {% now "Y" %} <strong>Algions AI Labs</strong> &bull; School Management System (Enterprise Monolith)
             </div>
-            <div>
-                <span class="badge bg-light text-dark border me-2">Role-Based Access Control</span>
-                <span class="badge bg-light text-dark border me-2">DB Unique Constraints</span>
-                <span class="badge bg-light text-dark border">Audit Trail Enabled</span>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-secondary border"><i class="bi bi-shield-check text-success me-1"></i>Server RBAC</span>
+                <span class="badge bg-light text-secondary border"><i class="bi bi-database-check text-primary me-1"></i>ACID Transactions</span>
+                <span class="badge bg-light text-secondary border"><i class="bi bi-journal-code text-info me-1"></i>OpenAPI 3.0</span>
             </div>
         </div>
     </footer>
 
-    <!-- Bootstrap 5 Bundle JS (with Popper) -->
+    <!-- Bootstrap 5 Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     {% block extra_js %}{% endblock %}
 </body>

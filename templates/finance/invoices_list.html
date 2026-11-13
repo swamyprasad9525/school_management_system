@@ -1,97 +1,114 @@
 {% extends 'base.html' %}
 
-{% block title %}Fee Invoices & Billing | School Management System{% endblock %}
+{% block title %}Billing & Fee Invoices | Algions SMS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
     <div>
-        <h2 class="fw-bold mb-1"><i class="bi bi-receipt text-primary me-2"></i>Student Fee Invoices</h2>
-        <p class="text-muted mb-0">Billing statements, payment statuses, and outstanding dues.</p>
+        <h2 class="fw-bold mb-1"><i class="bi bi-receipt text-primary me-2"></i>Student Billing Invoices</h2>
+        <p class="text-muted small mb-0">Track tuition schedules, payment statuses, and outstanding collection balances.</p>
     </div>
+    {% if user.is_admin_role %}
+        <a href="{% url 'finance:ledger_report' %}" class="btn btn-outline-dark btn-sm rounded-pill px-3">
+            <i class="bi bi-journal-check me-1"></i>Reconciliation Ledger
+        </a>
+    {% endif %}
 </div>
 
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-body">
-        <form method="get" class="row g-2 align-items-center">
-            <div class="col-md-6">
-                <input type="text" name="q" class="form-control" placeholder="Search by student name or invoice #..." value="{{ search_query }}">
+<!-- Search & Filter Card -->
+<div class="card card-premium p-3 mb-4">
+    <form method="get" class="row g-2 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="text" name="q" class="form-control" placeholder="Search by student name or invoice number..." value="{{ search_query }}">
             </div>
-            <div class="col-md-4">
-                <select name="status" class="form-select">
-                    <option value="">All Payment Statuses</option>
-                    {% for code, label in status_choices %}
-                        <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="col-md-2 d-flex gap-2">
-                <button type="submit" class="btn btn-primary w-100">Filter</button>
-                <a href="{% url 'finance:invoices_list' %}" class="btn btn-outline-secondary">Reset</a>
-            </div>
-        </form>
-    </div>
-</div>
-
-<div class="card shadow-sm border-0">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>Invoice No</th>
-                        <th>Student Name</th>
-                        <th>Fee Item</th>
-                        <th>Total Amount</th>
-                        <th>Paid Amount</th>
-                        <th>Balance Due</th>
-                        <th>Status</th>
-                        <th>Due Date</th>
-                        <th class="text-end">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for invoice in page_obj %}
-                        <tr>
-                            <td><code>{{ invoice.invoice_number }}</code></td>
-                            <td class="fw-semibold">{{ invoice.student.user.get_full_name }}</td>
-                            <td>{{ invoice.fee_structure.category.name }}</td>
-                            <td>${{ invoice.total_amount }}</td>
-                            <td class="text-success fw-semibold">${{ invoice.paid_amount }}</td>
-                            <td class="{% if invoice.balance > 0 %}text-danger fw-bold{% else %}text-muted{% endif %}">
-                                ${{ invoice.balance }}
-                            </td>
-                            <td>
-                                <span class="badge 
-                                    {% if invoice.status == 'PAID' %}bg-success
-                                    {% elif invoice.status == 'PARTIAL' %}bg-warning text-dark
-                                    {% else %}bg-danger{% endif %} px-2 py-1">
-                                    {{ invoice.get_status_display }}
-                                </span>
-                            </td>
-                            <td class="small text-muted">{{ invoice.due_date }}</td>
-                            <td class="text-end">
-                                {% if invoice.balance > 0 %}
-                                    <a href="{% url 'finance:record_payment' invoice.id %}" class="btn btn-primary btn-sm">
-                                        <i class="bi bi-credit-card me-1"></i>Pay Now
-                                    </a>
-                                {% else %}
-                                    <span class="badge bg-light text-success border border-success-subtle">
-                                        <i class="bi bi-check-circle me-1"></i>Settled
-                                    </span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="9" class="text-center py-5 text-muted">
-                                <i class="bi bi-wallet2 fs-1 d-block mb-2"></i>
-                                No fee invoices found.
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
+        <div class="col-md-4">
+            <select name="status" class="form-select">
+                <option value="">All Payment Statuses</option>
+                {% for code, label in status_choices %}
+                    <option value="{{ code }}" {% if status_filter == code %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
+            <button type="submit" class="btn btn-primary-gradient w-100 rounded-pill">Filter</button>
+            <a href="{% url 'finance:invoices_list' %}" class="btn btn-outline-secondary rounded-pill">Reset</a>
+        </div>
+    </form>
+</div>
+
+<!-- Table Card -->
+<div class="card card-premium overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-modern align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Invoice No</th>
+                    <th>Student Dossier</th>
+                    <th>Fee Schedule</th>
+                    <th>Total Billed</th>
+                    <th>Paid Amount</th>
+                    <th>Balance Due</th>
+                    <th>Status</th>
+                    <th>Due Date</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in page_obj %}
+                    <tr>
+                        <td><code class="fw-bold font-monospace">{{ invoice.invoice_number }}</code></td>
+                        <td>
+                            <div class="fw-bold text-dark">{{ invoice.student.user.get_full_name }}</div>
+                            <span class="text-muted small font-monospace">{{ invoice.student.admission_number }}</span>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-dark border">{{ invoice.fee_structure.category.name }}</span>
+                        </td>
+                        <td class="fw-semibold">${{ invoice.total_amount }}</td>
+                        <td class="text-success fw-bold">${{ invoice.paid_amount }}</td>
+                        <td class="fw-bold {% if invoice.balance > 0 %}text-danger{% else %}text-muted{% endif %}">
+                            ${{ invoice.balance }}
+                        </td>
+                        <td>
+                            <span class="badge 
+                                {% if invoice.status == 'PAID' %}badge-subtle-success
+                                {% elif invoice.status == 'PARTIAL' %}badge-subtle-warning
+                                {% else %}badge-subtle-danger{% endif %} px-2 py-1">
+                                {{ invoice.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="small text-muted">{{ invoice.due_date }}</td>
+                        <td class="text-end">
+                            {% if invoice.balance > 0 %}
+                                <a href="{% url 'finance:record_payment' invoice.id %}" class="btn btn-success btn-sm rounded-pill px-3 shadow-xs">
+                                    <i class="bi bi-credit-card me-1"></i>Settle Due
+                                </a>
+                            {% else %}
+                                {% with last_payment=invoice.payments.first %}
+                                    {% if last_payment %}
+                                        <a href="{% url 'finance:payment_receipt' last_payment.id %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                                            <i class="bi bi-receipt me-1"></i>Receipt
+                                        </a>
+                                    {% else %}
+                                        <span class="badge badge-subtle-success">Settled</span>
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            <i class="bi bi-wallet2 fs-1 d-block mb-2 text-secondary"></i>
+                            No fee invoices match the active filter.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -99,14 +116,13 @@
     <nav class="mt-4">
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ status_filter }}">Previous</a></li>
+                <li class="page-item"><a class="page-link rounded-pill me-1" href="?page={{ page_obj.previous_page_number }}&q={{ search_query }}&status={{ status_filter }}">Previous</a></li>
             {% endif %}
-            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+            <li class="page-item disabled"><span class="page-link rounded-pill me-1">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
             {% if page_obj.has_next %}
-                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ status_filter }}">Next</a></li>
+                <li class="page-item"><a class="page-link rounded-pill" href="?page={{ page_obj.next_page_number }}&q={{ search_query }}&status={{ status_filter }}">Next</a></li>
             {% endif %}
         </ul>
     </nav>
 {% endif %}
 {% endblock %}
-

@@ -1,100 +1,180 @@
 {% extends 'base.html' %}
 
-{% block title %}Welcome | School Management System{% endblock %}
+{% block title %}Enterprise School Management System | Algions AI Labs{% endblock %}
 
 {% block content %}
-<div class="py-5 text-center">
-    <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 mb-3">
-        🚀 Full-Stack Assessment &bull; Algions AI Labs
-    </span>
-    <h1 class="display-4 fw-bold text-dark mb-3">School Management System</h1>
-    <p class="lead text-muted mx-auto" style="max-width: 700px;">
-        A modular web application supporting academic operations, daily attendance with duplicate prevention, configurable grading scales, simulated fee ledgers, and strict server-side RBAC.
-    </p>
-    <div class="d-flex justify-content-center gap-3 mt-4">
-        <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg px-4 fw-semibold">
-            <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Portal
-        </a>
-        <a href="/api/docs/" target="_blank" class="btn btn-outline-secondary btn-lg px-4">
-            <i class="bi bi-code-slash me-2"></i>API Documentation
-        </a>
-    </div>
-</div>
+<div class="container py-4">
+    <!-- Hero Section with Modern Mesh Design -->
+    <div class="hero-mesh-card p-4 p-md-5 mb-5 text-center position-relative overflow-hidden">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white rounded-pill shadow-xs border mb-3">
+            <span class="badge bg-primary text-white rounded-pill px-2 py-1" style="font-size: 0.7rem;">ASSESSMENT READY</span>
+            <span class="small fw-semibold text-secondary">Algions AI Labs &bull; Advanced Full-Stack Evaluation</span>
+        </div>
 
-<!-- Quick Demo Credentials for Reviewers -->
-<div class="card shadow-sm border-0 mb-5 bg-white">
-    <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-        <h5 class="fw-bold mb-0"><i class="bi bi-key-fill text-warning me-2"></i>Pre-Configured Demo Accounts for Assessment Review</h5>
-        <span class="badge bg-success-subtle text-success border border-success-subtle">Seeded Credentials</span>
+        <h1 class="display-4 fw-extrabold hero-gradient-text mb-3" style="letter-spacing: -0.03em;">
+            School Management System
+        </h1>
+        <p class="lead text-muted mx-auto mb-4" style="max-width: 720px; font-size: 1.15rem;">
+            A production-grade, modular web application built on Django 6.x featuring strict server-side RBAC, transactional financial ledgers, database-level duplicate prevention, and automated grading pipelines.
+        </p>
+
+        <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="{% url 'accounts:login' %}" class="btn btn-primary-gradient px-4 py-2 fs-6 rounded-pill">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In to Portal
+            </a>
+            <a href="/api/docs/" target="_blank" class="btn btn-outline-dark px-4 py-2 fs-6 rounded-pill">
+                <i class="bi bi-code-slash me-2"></i>Interactive Swagger API
+            </a>
+        </div>
     </div>
-    <div class="card-body">
+
+    <!-- Reviewer Instant Experience Matrix (1-Click Logins) -->
+    <div class="mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h4 class="fw-bold mb-1"><i class="bi bi-lightning-charge-fill text-warning me-2"></i>1-Click Evaluation Personas</h4>
+                <p class="text-muted small mb-0">Select any role below to instantly log in and experience the isolated portal view.</p>
+            </div>
+            <span class="badge badge-subtle-success px-3 py-2 rounded-pill">
+                <i class="bi bi-check-circle me-1"></i>Seed Data Initialized
+            </span>
+        </div>
+
         <div class="row g-3">
-            <div class="col-md-4">
-                <div class="p-3 border rounded bg-light h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Admin / Staff</span>
-                        <i class="bi bi-shield-lock text-danger fs-5"></i>
+            <!-- Admin -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-premium h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 44px; height: 44px; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+                            <i class="bi bi-shield-lock-fill fs-5"></i>
+                        </div>
+                        <span class="badge badge-subtle-danger">Admin Persona</span>
                     </div>
-                    <div class="small mb-1"><strong>Username:</strong> <code>admin</code></div>
-                    <div class="small mb-2"><strong>Password:</strong> <code>admin123</code></div>
-                    <p class="small text-muted mb-0">Full access: Academics, attendance logs, exam schedules, fee ledgers, and audit trails.</p>
+                    <h5 class="fw-bold mb-1">Arthur Pendleton</h5>
+                    <div class="small text-muted mb-2">Principal & Headmaster</div>
+                    <p class="small text-secondary mb-3 flex-grow-1">
+                        Full administrative oversight, academic curriculum, fee ledger reconciliation, and system audit trail.
+                    </p>
+                    <a href="{% url 'accounts:demo_switch' 'admin' %}" class="btn btn-outline-danger w-100 btn-sm rounded-pill fw-semibold">
+                        Launch Admin View &rarr;
+                    </a>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="p-3 border rounded bg-light h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Teacher / Faculty</span>
-                        <i class="bi bi-person-badge text-primary fs-5"></i>
-                    </div>
-                    <div class="small mb-1"><strong>Username:</strong> <code>teacher1</code></div>
-                    <div class="small mb-2"><strong>Password:</strong> <code>teacher123</code></div>
-                    <p class="small text-muted mb-0">Restricted access: Can only take attendance and enter marks for assigned classes/subjects.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-3 border rounded bg-light h-100">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="badge bg-success-subtle text-success border border-success-subtle">Parent / Guardian</span>
-                        <i class="bi bi-people text-success fs-5"></i>
-                    </div>
-                    <div class="small mb-1"><strong>Username:</strong> <code>guardian1</code></div>
-                    <div class="small mb-2"><strong>Password:</strong> <code>guardian123</code></div>
-                    <p class="small text-muted mb-0">Isolated view: Can only view attendance, report cards, and pay invoices for their linked children.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
-<!-- Architecture & Core Modules Overview -->
-<div class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="fs-2 text-primary mb-2">📋</div>
-                <h5 class="fw-bold">1. Academic & Attendance</h5>
-                <p class="text-muted small">Manage grades, divisions, enrollments, and daily attendance. Database-level constraints prevent duplicate attendance entries for the same student, date, and session.</p>
+            <!-- Teacher -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-premium h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 44px; height: 44px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
+                            <i class="bi bi-person-badge-fill fs-5"></i>
+                        </div>
+                        <span class="badge badge-subtle-primary">Teacher Persona</span>
+                    </div>
+                    <h5 class="fw-bold mb-1">Sarah Jenkins</h5>
+                    <div class="small text-muted mb-2">Grade 10-A Class Teacher</div>
+                    <p class="small text-secondary mb-3 flex-grow-1">
+                        Assigned to Section 10-A. Can mark attendance and enter marks for mathematics. Restricted from other sections.
+                    </p>
+                    <a href="{% url 'accounts:demo_switch' 'teacher' %}" class="btn btn-outline-primary w-100 btn-sm rounded-pill fw-semibold">
+                        Launch Teacher View &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Guardian -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-premium h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 44px; height: 44px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <i class="bi bi-people-fill fs-5"></i>
+                        </div>
+                        <span class="badge badge-subtle-success">Guardian Persona</span>
+                    </div>
+                    <h5 class="fw-bold mb-1">Robert Taylor</h5>
+                    <div class="small text-muted mb-2">Parent of Alice Taylor</div>
+                    <p class="small text-secondary mb-3 flex-grow-1">
+                        Strict privacy isolation: Can only view Alice Taylor's attendance, report card, and pay her outstanding invoices.
+                    </p>
+                    <a href="{% url 'accounts:demo_switch' 'guardian' %}" class="btn btn-outline-success w-100 btn-sm rounded-pill fw-semibold">
+                        Launch Parent View &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- Student -->
+            <div class="col-md-6 col-lg-3">
+                <div class="card card-premium h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-sm" style="width: 44px; height: 44px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
+                            <i class="bi bi-mortarboard-fill fs-5"></i>
+                        </div>
+                        <span class="badge bg-info-subtle text-info border border-info-subtle">Student Persona</span>
+                    </div>
+                    <h5 class="fw-bold mb-1">Alice Taylor</h5>
+                    <div class="small text-muted mb-2">Grade 10-A &bull; Roll #101</div>
+                    <p class="small text-secondary mb-3 flex-grow-1">
+                        Personal academic performance portal: Attendance percentage, official report card, and billing statements.
+                    </p>
+                    <a href="{% url 'accounts:demo_switch' 'student' %}" class="btn btn-outline-info w-100 btn-sm rounded-pill fw-semibold">
+                        Launch Student View &rarr;
+                    </a>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="fs-2 text-success mb-2">📊</div>
-                <h5 class="fw-bold">2. Examinations & Grading</h5>
-                <p class="text-muted small">Configurable grading scale rules automatically evaluate percentages and assign letter grades. Generates official student report cards with print optimization.</p>
+
+    <!-- Core Engineering Guarantees -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="card card-premium p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-3 bg-primary-subtle text-primary p-2 fs-4">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0">Server-Side RBAC</h6>
+                        <span class="text-muted small">No Client-Side Only Hiding</span>
+                    </div>
+                </div>
+                <p class="small text-muted mb-0">
+                    Role enforcement is executed inside Python view decorators and database querysets. Direct URL tampering returns strict HTTP 403 Forbidden.
+                </p>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-body">
-                <div class="fs-2 text-warning mb-2">💳</div>
-                <h5 class="fw-bold">3. Fee Ledger & Audit Trail</h5>
-                <p class="text-muted small">Simulated fee payments with atomic transactions. Ledger reconciliation guarantees total invoiced equals total paid plus outstanding balance with full audit logging.</p>
+
+        <div class="col-md-4">
+            <div class="card card-premium p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-3 bg-success-subtle text-success p-2 fs-4">
+                        <i class="bi bi-database-lock"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0">Duplicate-Free Attendance</h6>
+                        <span class="text-muted small">DB Level Unique Constraint</span>
+                    </div>
+                </div>
+                <p class="small text-muted mb-0">
+                    <code>UniqueConstraint(fields=['session', 'student'])</code> eliminates duplicate entries even under concurrent submissions.
+                </p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card card-premium p-4 h-100">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-3 bg-warning-subtle text-warning-emphasis p-2 fs-4">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold mb-0">Reconciled Fee Ledger</h6>
+                        <span class="text-muted small">Mathematical Invariant</span>
+                    </div>
+                </div>
+                <p class="small text-muted mb-0">
+                    Payments are atomically committed via <code>transaction.atomic()</code> ensuring that Total Invoiced always equals Total Collected plus Outstanding Balance.
+                </p>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-

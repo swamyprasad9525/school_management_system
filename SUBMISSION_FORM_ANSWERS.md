@@ -71,3 +71,4 @@ Use the text below to fill in your official Algions AI Labs submission form:
   > "I confirm that I understand the complete codebase, data schema, and security architecture of this School Management System. I am fully prepared to explain the design decisions in the 15-minute technical walkthrough and execute the 10-minute live coding/debugging task."
 * **Secrets Declaration:**
   > "Confirmed: No real passwords, active payment tokens, personal identifiable information, or live API secrets exist in the repository. Environment variables use `.env.example`."
+

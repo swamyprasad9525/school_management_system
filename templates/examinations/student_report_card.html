@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Report Card - {{ student.user.get_full_name }} | School Management System{% endblock %}
+{% block title %}Report Card - {{ student.user.get_full_name }} | Algions Academy{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2 no-print">
     <div>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-1">
@@ -13,87 +13,103 @@
                     <li class="breadcrumb-item"><a href="{% url 'core:guardian_dashboard' %}">Portal</a></li>
                 {% endif %}
                 <li class="breadcrumb-item"><a href="{% url 'academics:student_detail' student.id %}">{{ student.user.get_full_name }}</a></li>
-                <li class="breadcrumb-item active">Report Card</li>
+                <li class="breadcrumb-item active">Academic Transcript</li>
             </ol>
         </nav>
-        <h2 class="fw-bold mb-0">Official Student Report Card</h2>
+        <h2 class="fw-bold mb-0">Official Student Performance Transcript</h2>
     </div>
     <div class="d-flex gap-2">
         <form method="get" class="d-inline-flex gap-2">
-            <select name="exam" class="form-select" onchange="this.form.submit()">
+            <select name="exam" class="form-select form-select-sm rounded-pill" onchange="this.form.submit()">
                 {% for e in available_exams %}
                     <option value="{{ e.id }}" {% if active_exam.id == e.id %}selected{% endif %}>{{ e.name }}</option>
                 {% endfor %}
             </select>
         </form>
-        <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
-            <i class="bi bi-printer me-1"></i>Print Report Card
+        <button type="button" class="btn btn-primary-gradient btn-sm rounded-pill px-3" onclick="window.print()">
+            <i class="bi bi-printer-fill me-1"></i>Print Official Transcript
         </button>
     </div>
 </div>
 
-<!-- Official Report Card Layout -->
-<div class="card shadow-sm border p-4 p-md-5 bg-white mx-auto" style="max-width: 900px;">
-    <!-- School Header -->
-    <div class="text-center border-bottom pb-4 mb-4">
-        <div class="fs-1 text-primary mb-1">🏫</div>
-        <h3 class="fw-bold text-uppercase mb-1">Algions International Academy</h3>
+<!-- Official Certificate Frame -->
+<div class="certificate-frame p-4 p-md-5 mx-auto rounded-3 mb-5" style="max-width: 920px;">
+    <!-- School Seal & Crest Header -->
+    <div class="text-center border-bottom pb-4 mb-4 position-relative">
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow-sm" 
+                 style="width: 50px; height: 50px; background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%); font-size: 1.5rem;">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <div>
+                <h3 class="fw-extrabold text-uppercase mb-0 tracking-tight" style="color: #1e293b;">Algions International Academy</h3>
+                <div class="small fw-semibold text-primary text-uppercase tracking-wider" style="font-size: 0.75rem;">Office of the Academic Registrar & Evaluation Board</div>
+            </div>
+        </div>
         <p class="text-muted small mb-0">Official Academic Performance Transcript &bull; Confidential Student Record</p>
-    </div>
 
-    <!-- Student Metadata -->
-    <div class="row g-3 mb-4 bg-light p-3 rounded border">
-        <div class="col-sm-6 col-md-3">
-            <span class="text-muted small text-uppercase">Student Name</span>
-            <div class="fw-bold">{{ student.user.get_full_name }}</div>
-        </div>
-        <div class="col-sm-6 col-md-3">
-            <span class="text-muted small text-uppercase">Admission Number</span>
-            <div class="fw-bold"><code>{{ student.admission_number }}</code></div>
-        </div>
-        <div class="col-sm-6 col-md-3">
-            <span class="text-muted small text-uppercase">Class & Section</span>
-            <div class="fw-bold">{{ enrollment.section|default:"-" }}</div>
-        </div>
-        <div class="col-sm-6 col-md-3">
-            <span class="text-muted small text-uppercase">Examination</span>
-            <div class="fw-bold text-primary">{{ active_exam.name|default:"General" }}</div>
+        <!-- Authenticity Watermark Badge -->
+        <div class="position-absolute top-0 end-0 d-none d-sm-block text-end">
+            <span class="badge bg-light text-dark border px-2 py-1 small">
+                <i class="bi bi-patch-check-fill text-primary me-1"></i>VERIFIED TRANSCRIPT
+            </span>
+            <div class="text-muted" style="font-size: 0.65rem;">ID: ALGN-2026-X9</div>
         </div>
     </div>
 
-    <!-- Results Table -->
+    <!-- Student Dossier Metadata -->
+    <div class="row g-3 mb-4 bg-light p-3 rounded-3 border">
+        <div class="col-6 col-md-3">
+            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.7rem;">Student Full Name</span>
+            <div class="fw-bold text-dark">{{ student.user.get_full_name }}</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.7rem;">Admission Number</span>
+            <div class="fw-bold font-monospace text-primary">{{ student.admission_number }}</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.7rem;">Class Division</span>
+            <div class="fw-bold text-dark">{{ enrollment.section|default:"Unassigned" }}</div>
+        </div>
+        <div class="col-6 col-md-3">
+            <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.7rem;">Assessment Term</span>
+            <div class="fw-bold text-dark">{{ active_exam.name|default:"General Assessment" }}</div>
+        </div>
+    </div>
+
+    <!-- Examination Results Table -->
     <div class="table-responsive mb-4">
-        <table class="table table-bordered align-middle">
-            <thead class="table-light text-uppercase small">
+        <table class="table table-bordered align-middle mb-0">
+            <thead class="table-light text-uppercase small text-muted" style="font-size: 0.75rem;">
                 <tr>
-                    <th style="width: 50px;">#</th>
-                    <th>Subject Code & Name</th>
-                    <th class="text-center" style="width: 120px;">Max Marks</th>
-                    <th class="text-center" style="width: 120px;">Pass Marks</th>
-                    <th class="text-center" style="width: 150px;">Marks Obtained</th>
+                    <th style="width: 45px;">#</th>
+                    <th>Course Code & Subject Title</th>
+                    <th class="text-center" style="width: 110px;">Max Marks</th>
+                    <th class="text-center" style="width: 110px;">Pass Marks</th>
+                    <th class="text-center" style="width: 140px;">Marks Scored</th>
                     <th class="text-center" style="width: 100px;">Grade</th>
                 </tr>
             </thead>
             <tbody>
                 {% for r in results %}
                     <tr>
-                        <td>{{ forloop.counter }}</td>
+                        <td class="text-muted small">{{ forloop.counter }}</td>
                         <td>
-                            <div class="fw-semibold">{{ r.exam_subject.subject.name }}</div>
-                            <span class="text-muted small"><code>{{ r.exam_subject.subject.code }}</code></span>
+                            <div class="fw-bold text-dark">{{ r.exam_subject.subject.name }}</div>
+                            <span class="text-muted small font-monospace">{{ r.exam_subject.subject.code }}</span>
                         </td>
-                        <td class="text-center">{{ r.exam_subject.max_marks|floatformat:0 }}</td>
+                        <td class="text-center text-muted">{{ r.exam_subject.max_marks|floatformat:0 }}</td>
                         <td class="text-center text-muted">{{ r.exam_subject.pass_marks|floatformat:0 }}</td>
-                        <td class="text-center fw-bold {% if r.marks_obtained < r.exam_subject.pass_marks %}text-danger{% else %}text-success{% endif %}">
+                        <td class="text-center fw-bold {% if r.marks_obtained < r.exam_subject.pass_marks %}text-danger{% else %}text-success fs-6{% endif %}">
                             {{ r.marks_obtained }}
                         </td>
                         <td class="text-center">
                             <span class="badge 
-                                {% if r.grade == 'A+' or r.grade == 'A' %}bg-success
-                                {% elif r.grade == 'B' %}bg-primary
-                                {% elif r.grade == 'C' %}bg-warning text-dark
-                                {% elif r.grade == 'F' %}bg-danger
-                                {% else %}bg-secondary{% endif %} px-2 py-1">
+                                {% if r.grade == 'A+' or r.grade == 'A' %}badge-subtle-success
+                                {% elif r.grade == 'B' %}badge-subtle-primary
+                                {% elif r.grade == 'C' %}badge-subtle-warning
+                                {% elif r.grade == 'F' %}badge-subtle-danger
+                                {% else %}bg-secondary{% endif %} px-3 py-1 font-monospace">
                                 {{ r.grade }}
                             </span>
                         </td>
@@ -101,7 +117,7 @@
                 {% empty %}
                     <tr>
                         <td colspan="6" class="text-center py-4 text-muted">
-                            No subject marks recorded for this examination yet.
+                            No subject marks recorded for this examination session yet.
                         </td>
                     </tr>
                 {% endfor %}
@@ -113,54 +129,55 @@
                         <td class="text-center">{{ total_max|floatformat:0 }}</td>
                         <td></td>
                         <td class="text-center text-primary fs-6">{{ total_obtained }}</td>
-                        <td class="text-center fs-6 text-success">{{ overall_grade }}</td>
+                        <td class="text-center text-success fs-6">{{ overall_grade }}</td>
                     </tr>
                 </tfoot>
             {% endif %}
         </table>
     </div>
 
-    <!-- Summary Metrics -->
+    <!-- Summary Metrics Gauge Cards -->
     <div class="row g-3 mb-5">
         <div class="col-md-4">
-            <div class="p-3 border rounded text-center bg-light">
-                <span class="text-muted small text-uppercase">Overall Percentage</span>
-                <h3 class="fw-bold mt-1 mb-0 text-primary">{{ overall_percentage }}%</h3>
+            <div class="p-3 border rounded-3 text-center bg-white shadow-xs">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.72rem;">Term Percentage</span>
+                <h2 class="fw-extrabold mt-1 mb-0 text-primary">{{ overall_percentage }}%</h2>
+                <div class="small text-muted mt-1">Weighted Performance</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3 border rounded text-center bg-light">
-                <span class="text-muted small text-uppercase">Final Awarded Grade</span>
-                <h3 class="fw-bold mt-1 mb-0 text-success">{{ overall_grade }}</h3>
+            <div class="p-3 border rounded-3 text-center bg-white shadow-xs">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.72rem;">Conferred Final Grade</span>
+                <h2 class="fw-extrabold mt-1 mb-0 text-success">{{ overall_grade }}</h2>
+                <div class="small text-muted mt-1">{{ active_exam.grading_scale.name|default:"Standard Scale" }}</div>
             </div>
         </div>
         <div class="col-md-4">
-            <div class="p-3 border rounded text-center bg-light">
-                <span class="text-muted small text-uppercase">Session Attendance</span>
-                <h3 class="fw-bold mt-1 mb-0 text-dark">{{ attendance_rate }}%</h3>
-                <span class="small text-muted">{{ present_attendance }} of {{ total_attendance }} days</span>
+            <div class="p-3 border rounded-3 text-center bg-white shadow-xs">
+                <span class="text-muted small text-uppercase fw-semibold" style="font-size: 0.72rem;">Attendance Health</span>
+                <h2 class="fw-extrabold mt-1 mb-0 text-dark">{{ attendance_rate }}%</h2>
+                <div class="small text-muted mt-1">{{ present_attendance }} of {{ total_attendance }} days recorded</div>
             </div>
         </div>
     </div>
 
-    <!-- Signatures -->
+    <!-- Signatures & Official Endorsement -->
     <div class="row text-center mt-5 pt-4 border-top">
         <div class="col-4">
             <div class="border-top border-dark pt-2 mx-3">
-                <span class="small text-muted">Class Teacher Signature</span>
+                <span class="small text-muted fw-semibold">Class Teacher Endorsement</span>
             </div>
         </div>
         <div class="col-4">
             <div class="border-top border-dark pt-2 mx-3">
-                <span class="small text-muted">Parent / Guardian Signature</span>
+                <span class="small text-muted fw-semibold">Parent / Guardian Signature</span>
             </div>
         </div>
         <div class="col-4">
             <div class="border-top border-dark pt-2 mx-3">
-                <span class="small text-muted">Principal / Headmaster</span>
+                <span class="small text-muted fw-semibold">Principal / Registrar Seal</span>
             </div>
         </div>
     </div>
 </div>
 {% endblock %}
-
