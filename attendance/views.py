@@ -5,6 +5,7 @@ from django.db import transaction
 from django.utils import timezone
 from django.db.models import Count, Q
 from accounts.permissions import role_required, Role
+from accounts.models import StudentProfile
 from academics.models import Section, StudentEnrollment, AcademicYear
 from audit.models import log_action
 from .models import AttendanceSession, AttendanceRecord, AttendanceStatus
