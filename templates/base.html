@@ -431,6 +431,11 @@
             if (icon) {
                 icon.className = theme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill';
             }
+            if (window.Chart) {
+                const isDark = theme === 'dark';
+                Chart.defaults.color = isDark ? '#94a3b8' : '#64748b';
+                Chart.defaults.borderColor = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.08)';
+            }
         }
 
         function toggleTheme() {

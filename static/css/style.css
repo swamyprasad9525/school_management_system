@@ -513,12 +513,26 @@ kbd {
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
     transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
                 box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
                 border-color 0.25s ease, 
                 background-color 0.25s ease;
     position: relative;
     overflow: hidden;
+}
+
+.card-premium > .card-body {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.class-item-card, .teacher-card-col, .fee-structure-card, .exam-card-wrapper {
+    display: flex;
+    flex-direction: column;
 }
 
 .card-premium:hover {
@@ -983,6 +997,102 @@ kbd {
 .custom-toast.toast-info { border-left-color: var(--info); }
 
 /* ==========================================================================
+   MICRO-INTERACTIONS & INTERACTIVE TILES
+   ========================================================================== */
+.copy-badge {
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    user-select: all;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.copy-badge:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+}
+
+.copy-badge:active {
+    transform: scale(0.96);
+}
+
+/* Nav Pills / Segmented Controls (Linear Style) */
+.nav-pills .nav-link {
+    color: var(--text-secondary);
+    background: var(--bg-surface-subtle);
+    border: 1px solid var(--border-subtle);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-surface-elevated);
+    border-color: var(--border-strong);
+}
+
+.nav-pills .nav-link.active {
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border-color: transparent;
+    box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+/* Payment Method Selectable Tile */
+.payment-method-tile {
+    cursor: pointer;
+    background: var(--bg-surface);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+    color: var(--text-primary);
+}
+
+.payment-method-tile:hover {
+    border-color: var(--primary);
+    background: var(--bg-surface-subtle);
+}
+
+.btn-check:checked + .payment-method-tile {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* Maintain Subtitle Visibility on Button Hover */
+.btn-outline-primary:hover .text-muted,
+.btn-outline-danger:hover .text-muted,
+.btn-outline-success:hover .text-muted,
+.btn-outline-info:hover .text-muted,
+.btn-outline-dark:hover .text-muted {
+    color: rgba(255, 255, 255, 0.88) !important;
+}
+
+/* Topbar Mobile Breakpoint Alignment */
+@media (max-width: 767.98px) {
+    .app-topbar {
+        padding: 0 1rem;
+        height: 64px;
+    }
+    .search-trigger {
+        min-width: auto;
+        padding: 0.45rem 0.75rem;
+    }
+    .search-trigger span,
+    .search-shortcut-badge {
+        display: none;
+    }
+}
+
+/* ==========================================================================
    DARK THEME OVERRIDES FOR NATIVE BOOTSTRAP COMPONENTS
    ========================================================================== */
 [data-theme="dark"] .bg-light {
@@ -993,7 +1103,7 @@ kbd {
     background-color: var(--bg-surface) !important;
 }
 
-[data-theme="dark"] .text-dark {
+[data-theme="dark"] .text-dark:not(.bg-warning):not(.badge-warning):not(.alert-warning) {
     color: var(--text-primary) !important;
 }
 
@@ -1009,6 +1119,52 @@ kbd {
     border-bottom-color: var(--border-subtle) !important;
 }
 
+[data-theme="dark"] .border-dark {
+    border-color: var(--border-strong) !important;
+}
+
+/* Dark Mode Native Buttons */
+[data-theme="dark"] .btn-outline-dark {
+    color: var(--text-primary) !important;
+    border-color: var(--border-strong) !important;
+    background-color: var(--bg-surface-subtle) !important;
+}
+
+[data-theme="dark"] .btn-outline-dark:hover {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-secondary) !important;
+    border-color: var(--border-subtle) !important;
+    background-color: transparent !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary:hover {
+    color: var(--text-primary) !important;
+    border-color: var(--border-strong) !important;
+    background-color: var(--bg-surface-subtle) !important;
+}
+
+[data-theme="dark"] .btn-light {
+    background-color: var(--bg-surface-subtle) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-subtle) !important;
+}
+
+[data-theme="dark"] .btn-light:hover {
+    background-color: var(--bg-surface-elevated) !important;
+    border-color: var(--border-strong) !important;
+    color: var(--primary) !important;
+}
+
+[data-theme="dark"] .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Dark Mode Form Inputs */
 [data-theme="dark"] .form-control,
 [data-theme="dark"] .form-select {
     background-color: var(--bg-surface-subtle);
@@ -1024,6 +1180,69 @@ kbd {
     box-shadow: 0 0 0 3px var(--primary-glow);
 }
 
+/* Dark Mode Progress Bars */
+[data-theme="dark"] .progress {
+    background-color: var(--bg-surface-subtle) !important;
+}
+
+/* Dark Mode Tables */
+[data-theme="dark"] .table-light,
+[data-theme="dark"] .table-light th,
+[data-theme="dark"] .table-light td {
+    background-color: var(--bg-surface-subtle) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-subtle) !important;
+}
+
+[data-theme="dark"] .table-bordered,
+[data-theme="dark"] .table-bordered th,
+[data-theme="dark"] .table-bordered td {
+    border-color: var(--border-subtle) !important;
+}
+
+/* Dark Mode Pagination */
+[data-theme="dark"] .pagination .page-link {
+    background-color: var(--bg-surface);
+    border-color: var(--border-subtle);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .pagination .page-item.active .page-link {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .pagination .page-item.disabled .page-link {
+    background-color: var(--bg-surface-subtle);
+    border-color: var(--border-subtle);
+    color: var(--text-light);
+}
+
+/* Dark Mode Cards, Footers & Badges */
+[data-theme="dark"] .card-footer {
+    background-color: var(--bg-surface) !important;
+    border-color: var(--border-subtle) !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .badge.bg-light,
+[data-theme="dark"] .badge.bg-white {
+    background-color: var(--bg-surface-subtle) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--border-subtle);
+}
+
+[data-theme="dark"] .certificate-frame {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+    outline-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-theme="dark"] .receipt-voucher {
+    border-color: var(--border-strong) !important;
+}
+
+/* Dark Mode Modals, Dropdowns & Lists */
 [data-theme="dark"] .modal-content {
     background-color: var(--bg-surface);
     color: var(--text-secondary);

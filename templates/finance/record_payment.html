@@ -103,7 +103,7 @@
                             {% for code, label in payment_methods %}
                                 <div class="col-sm-6">
                                     <input type="radio" class="btn-check" name="payment_method" id="pm_{{ code }}" value="{{ code }}" {% if forloop.first %}checked{% endif %}>
-                                    <label class="btn btn-outline-light text-dark border p-3 w-100 text-start d-flex align-items-center gap-2 rounded-3" for="pm_{{ code }}">
+                                    <label class="payment-method-tile w-100" for="pm_{{ code }}">
                                         <i class="bi {% if code == 'CARD' %}bi-credit-card-2-front text-primary{% elif code == 'UPI' %}bi-qr-code text-success{% elif code == 'BANK' %}bi-bank text-info{% else %}bi-cash text-warning{% endif %} fs-5"></i>
                                         <span class="fw-semibold small">{{ label }}</span>
                                     </label>
