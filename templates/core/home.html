@@ -108,110 +108,113 @@
 
     <!-- Reviewer Instant Experience Matrix (1-Click Logins) -->
     <div class="mb-5">
-        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
-            <div>
-                <h3 class="fw-extrabold mb-1 d-flex align-items-center gap-2">
-                    <span class="rounded-3 d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); font-size: 1rem;">
-                        <i class="bi bi-lightning-charge-fill"></i>
-                    </span>
-                    <span>1-Click Evaluation Persona Switcher</span>
-                </h3>
-                <p class="text-muted small mb-0">Experience each role's isolated view and test server-side authorization boundaries with a single click.</p>
+        <div class="text-center mb-5">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white bg-opacity-75 rounded-pill shadow-xs border mb-3">
+                <span class="pulse-indicator" style="width: 7px; height: 7px;"></span>
+                <span class="badge bg-warning text-dark rounded-pill px-2 py-0 font-monospace small">1-CLICK SWITCHER</span>
+                <span class="small fw-semibold text-secondary">Instant Evaluation Access (No Credentials Needed)</span>
             </div>
-            <span class="badge badge-subtle-success px-3 py-2 rounded-pill font-monospace">
-                <i class="bi bi-check-circle-fill me-1"></i>Pre-Seeded Mock Database Loaded
-            </span>
+            <h2 class="display-6 fw-extrabold hero-gradient-text mb-2" style="letter-spacing: -0.03em;">
+                Interactive Evaluation Personas
+            </h2>
+            <p class="text-muted mx-auto mb-0" style="max-width: 680px; font-size: 0.95rem;">
+                Experience the school management platform through each distinct user role. Click any persona to instantly assume their authenticated identity and test server-side authorization boundaries.
+            </p>
         </div>
 
         <div class="row g-4">
             <!-- Admin -->
             <div class="col-md-6 col-lg-3">
-                <div class="card persona-card persona-admin spotlight-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-xs" style="width: 48px; height: 48px; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
-                            <i class="bi bi-shield-lock-fill fs-5"></i>
+                <div class="persona-card persona-admin spotlight-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+                            <i class="bi bi-shield-lock-fill"></i>
                         </div>
-                        <span class="badge badge-subtle-danger rounded-pill px-3 py-1 font-monospace">Admin</span>
+                        <span class="persona-role-badge badge-subtle-danger">Admin</span>
                     </div>
-                    <h5 class="fw-bold mb-1 text-dark">Arthur Pendleton</h5>
-                    <div class="small text-muted mb-3">Principal & Headmaster</div>
-                    <ul class="list-unstyled small text-secondary mb-4 flex-grow-1">
-                        <li class="mb-1"><i class="bi bi-check2 text-danger me-1"></i>Executive command center</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-danger me-1"></i>Curriculum & faculty allocations</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-danger me-1"></i>Financial ledger reconciliation</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-danger me-1"></i>Security event audit trail</li>
+                    <div class="persona-name">Arthur Pendleton</div>
+                    <div class="small text-muted mb-3 fw-medium">Principal & Headmaster</div>
+                    <ul class="persona-feature-list">
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-danger"></i><span>Executive command center</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-danger"></i><span>Curriculum & faculty allocations</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-danger"></i><span>Financial ledger reconciliation</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-danger"></i><span>Security event audit trail</span></li>
                     </ul>
-                    <a href="{% url 'accounts:demo_switch' 'admin' %}" class="btn btn-outline-danger w-100 rounded-pill fw-semibold py-2">
-                        Launch Admin View &rarr;
+                    <a href="{% url 'accounts:demo_switch' 'admin' %}" class="btn-persona btn-persona-admin">
+                        <span>Launch Admin View</span>
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
             <!-- Teacher -->
             <div class="col-md-6 col-lg-3">
-                <div class="card persona-card persona-teacher spotlight-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-xs" style="width: 48px; height: 48px; background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);">
-                            <i class="bi bi-person-badge-fill fs-5"></i>
+                <div class="persona-card persona-teacher spotlight-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);">
+                            <i class="bi bi-person-badge-fill"></i>
                         </div>
-                        <span class="badge badge-subtle-primary rounded-pill px-3 py-1 font-monospace">Teacher</span>
+                        <span class="persona-role-badge badge-subtle-primary">Teacher</span>
                     </div>
-                    <h5 class="fw-bold mb-1 text-dark">Sarah Jenkins</h5>
-                    <div class="small text-muted mb-3">Grade 10-A Class Teacher</div>
-                    <ul class="list-unstyled small text-secondary mb-4 flex-grow-1">
-                        <li class="mb-1"><i class="bi bi-check2 text-primary me-1"></i>Homeroom attendance desk</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-primary me-1"></i>Evaluation marks gradebook</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-primary me-1"></i>Automated grade calculations</li>
-                        <li class="mb-1"><i class="bi bi-x-lg text-danger me-1"></i>Restricted from other classes</li>
+                    <div class="persona-name">Sarah Jenkins</div>
+                    <div class="small text-muted mb-3 fw-medium">Grade 10-A Class Teacher</div>
+                    <ul class="persona-feature-list">
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-primary"></i><span>Homeroom attendance desk</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-primary"></i><span>Evaluation marks gradebook</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-primary"></i><span>Automated grade calculations</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-shield-x text-warning"></i><span>Restricted from other classes</span></li>
                     </ul>
-                    <a href="{% url 'accounts:demo_switch' 'teacher' %}" class="btn btn-outline-primary w-100 rounded-pill fw-semibold py-2">
-                        Launch Teacher View &rarr;
+                    <a href="{% url 'accounts:demo_switch' 'teacher' %}" class="btn-persona btn-persona-teacher">
+                        <span>Launch Teacher View</span>
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
             <!-- Guardian -->
             <div class="col-md-6 col-lg-3">
-                <div class="card persona-card persona-guardian spotlight-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-xs" style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                            <i class="bi bi-people-fill fs-5"></i>
+                <div class="persona-card persona-guardian spotlight-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                            <i class="bi bi-people-fill"></i>
                         </div>
-                        <span class="badge badge-subtle-success rounded-pill px-3 py-1 font-monospace">Guardian</span>
+                        <span class="persona-role-badge badge-subtle-success">Guardian</span>
                     </div>
-                    <h5 class="fw-bold mb-1 text-dark">Robert Taylor</h5>
-                    <div class="small text-muted mb-3">Parent of Alice Taylor</div>
-                    <ul class="list-unstyled small text-secondary mb-4 flex-grow-1">
-                        <li class="mb-1"><i class="bi bi-check2 text-success me-1"></i>Confidential family portal</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-success me-1"></i>Alice's attendance & report card</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-success me-1"></i>Simulated fee payments & receipts</li>
-                        <li class="mb-1"><i class="bi bi-shield-lock text-success me-1"></i>Strict HTTP 403 on other kids</li>
+                    <div class="persona-name">Robert Taylor</div>
+                    <div class="small text-muted mb-3 fw-medium">Parent of Alice Taylor</div>
+                    <ul class="persona-feature-list">
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-success"></i><span>Confidential family portal</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-success"></i><span>Alice's attendance & report card</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-success"></i><span>Simulated fee payments & receipts</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-shield-lock text-success"></i><span>Strict HTTP 403 on other kids</span></li>
                     </ul>
-                    <a href="{% url 'accounts:demo_switch' 'guardian' %}" class="btn btn-outline-success w-100 rounded-pill fw-semibold py-2">
-                        Launch Parent View &rarr;
+                    <a href="{% url 'accounts:demo_switch' 'guardian' %}" class="btn-persona btn-persona-guardian">
+                        <span>Launch Parent View</span>
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
 
             <!-- Student -->
             <div class="col-md-6 col-lg-3">
-                <div class="card persona-card persona-student spotlight-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="rounded-3 d-flex align-items-center justify-content-center text-white shadow-xs" style="width: 48px; height: 48px; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
-                            <i class="bi bi-mortarboard-fill fs-5"></i>
+                <div class="persona-card persona-student spotlight-card">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
+                            <i class="bi bi-mortarboard-fill"></i>
                         </div>
-                        <span class="badge badge-subtle-info rounded-pill px-3 py-1 font-monospace">Student</span>
+                        <span class="persona-role-badge badge-subtle-info">Student</span>
                     </div>
-                    <h5 class="fw-bold mb-1 text-dark">Alice Taylor</h5>
-                    <div class="small text-muted mb-3">Grade 10-A &bull; Roll #101</div>
-                    <ul class="list-unstyled small text-secondary mb-4 flex-grow-1">
-                        <li class="mb-1"><i class="bi bi-check2 text-info me-1"></i>Personal academic dashboard</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-info me-1"></i>Official certified transcript</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-info me-1"></i>Attendance compliance tracker</li>
-                        <li class="mb-1"><i class="bi bi-check2 text-info me-1"></i>Fee statements history</li>
+                    <div class="persona-name">Alice Taylor</div>
+                    <div class="small text-muted mb-3 fw-medium">Grade 10-A &bull; Roll #101</div>
+                    <ul class="persona-feature-list">
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-info"></i><span>Personal academic dashboard</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-info"></i><span>Official certified transcript</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-info"></i><span>Attendance compliance tracker</span></li>
+                        <li class="persona-feature-item"><i class="bi bi-check2-circle text-info"></i><span>Fee statements history</span></li>
                     </ul>
-                    <a href="{% url 'accounts:demo_switch' 'student' %}" class="btn btn-outline-info w-100 rounded-pill fw-semibold py-2">
-                        Launch Student View &rarr;
+                    <a href="{% url 'accounts:demo_switch' 'student' %}" class="btn-persona btn-persona-student">
+                        <span>Launch Student View</span>
+                        <i class="bi bi-arrow-right"></i>
                     </a>
                 </div>
             </div>
@@ -222,7 +225,7 @@
     <div class="card card-premium p-4 p-md-5 mb-5">
         <div class="text-center mb-4">
             <span class="badge badge-subtle-primary px-3 py-1 rounded-pill small font-monospace">INTERACTIVE ARCHITECTURE</span>
-            <h2 class="fw-extrabold text-dark mt-2 mb-1">Engineered to Satisfy Rigorous Production Standards</h2>
+            <h2 class="display-6 fw-extrabold hero-gradient-text mt-2 mb-2" style="letter-spacing: -0.03em;">Engineered to Satisfy Rigorous Production Standards</h2>
             <p class="text-muted small mx-auto" style="max-width: 600px;">Click any architectural pillar below to explore how the system guarantees security, data integrity, and privacy.</p>
         </div>
 
@@ -275,10 +278,16 @@
                         </div>
                     </div>
                     <div class="col-lg-6 text-center">
-                        <div class="p-4 rounded-3 bg-white border shadow-xs text-start">
-                            <span class="small fw-bold text-uppercase text-muted font-monospace">Verified Python View Logic</span>
-                            <pre class="bg-light p-3 rounded mt-2 mb-0 small text-dark font-monospace" style="font-size: 0.75rem;">
-@role_required([Role.ADMIN, Role.TEACHER])
+                        <div class="mac-code-window shadow-lg">
+                            <div class="mac-window-header">
+                                <div class="mac-dots">
+                                    <span class="mac-dot mac-dot-red"></span>
+                                    <span class="mac-dot mac-dot-yellow"></span>
+                                    <span class="mac-dot mac-dot-green"></span>
+                                </div>
+                                <span class="mac-window-title">academics/views.py &bull; Server-Side RBAC Guard</span>
+                            </div>
+                            <pre class="mac-code-body"><code>@role_required([Role.ADMIN, Role.TEACHER])
 def record_attendance(request):
     if user.is_teacher_role:
         # Check assigned homeroom or subject
@@ -286,7 +295,7 @@ def record_attendance(request):
             Q(class_teacher=teacher) | Q(subject_assignments__teacher=teacher)
         ).filter(id=selected_section_id).exists()
         if not is_assigned:
-            raise PermissionDenied("Assigned classes only")</pre>
+            raise PermissionDenied("Assigned classes only")</code></pre>
                         </div>
                     </div>
                 </div>
@@ -307,10 +316,16 @@ def record_attendance(request):
                         </div>
                     </div>
                     <div class="col-lg-6 text-center">
-                        <div class="p-4 rounded-3 bg-white border shadow-xs text-start">
-                            <span class="small fw-bold text-uppercase text-muted font-monospace">Model Constraint Definition</span>
-                            <pre class="bg-light p-3 rounded mt-2 mb-0 small text-dark font-monospace" style="font-size: 0.75rem;">
-class AttendanceRecord(models.Model):
+                        <div class="mac-code-window shadow-lg">
+                            <div class="mac-window-header">
+                                <div class="mac-dots">
+                                    <span class="mac-dot mac-dot-red"></span>
+                                    <span class="mac-dot mac-dot-yellow"></span>
+                                    <span class="mac-dot mac-dot-green"></span>
+                                </div>
+                                <span class="mac-window-title">attendance/models.py &bull; DB Constraint Engine</span>
+                            </div>
+                            <pre class="mac-code-body"><code>class AttendanceRecord(models.Model):
     session = models.ForeignKey(AttendanceSession, ...)
     student = models.ForeignKey(StudentProfile, ...)
     status = models.CharField(max_length=10, choices=AttendanceStatus.choices)
@@ -321,7 +336,7 @@ class AttendanceRecord(models.Model):
                 fields=['session', 'student'],
                 name='unique_attendance_per_session'
             )
-        ]</pre>
+        ]</code></pre>
                         </div>
                     </div>
                 </div>
@@ -341,15 +356,21 @@ class AttendanceRecord(models.Model):
                         </div>
                     </div>
                     <div class="col-lg-6 text-center">
-                        <div class="p-4 rounded-3 bg-white border shadow-xs text-start">
-                            <span class="small fw-bold text-uppercase text-muted font-monospace">Automated Evaluation Engine</span>
-                            <pre class="bg-light p-3 rounded mt-2 mb-0 small text-dark font-monospace" style="font-size: 0.75rem;">
-def calculate_grade(exam, percentage):
+                        <div class="mac-code-window shadow-lg">
+                            <div class="mac-window-header">
+                                <div class="mac-dots">
+                                    <span class="mac-dot mac-dot-red"></span>
+                                    <span class="mac-dot mac-dot-yellow"></span>
+                                    <span class="mac-dot mac-dot-green"></span>
+                                </div>
+                                <span class="mac-window-title">examinations/services.py &bull; Automated Pipeline</span>
+                            </div>
+                            <pre class="mac-code-body"><code>def calculate_grade(exam, percentage):
     rules = exam.grading_scale.rules.all()
     for rule in rules:
         if rule.min_percentage &lt;= percentage &lt;= rule.max_percentage:
             return rule.grade
-    return "F"</pre>
+    return "F"</code></pre>
                         </div>
                     </div>
                 </div>
@@ -369,17 +390,23 @@ def calculate_grade(exam, percentage):
                         </div>
                     </div>
                     <div class="col-lg-6 text-center">
-                        <div class="p-4 rounded-3 bg-white border shadow-xs text-start">
-                            <span class="small fw-bold text-uppercase text-muted font-monospace">Ledger Atomic Method</span>
-                            <pre class="bg-light p-3 rounded mt-2 mb-0 small text-dark font-monospace" style="font-size: 0.75rem;">
-def reconcile_ledger(self):
+                        <div class="mac-code-window shadow-lg">
+                            <div class="mac-window-header">
+                                <div class="mac-dots">
+                                    <span class="mac-dot mac-dot-red"></span>
+                                    <span class="mac-dot mac-dot-yellow"></span>
+                                    <span class="mac-dot mac-dot-green"></span>
+                                </div>
+                                <span class="mac-window-title">finance/models.py &bull; Invariant Reconciliation</span>
+                            </div>
+                            <pre class="mac-code-body"><code>def reconcile_ledger(self):
     total_paid = self.payments.aggregate(
         models.Sum('amount'))['amount__sum'] or Decimal('0.00')
     self.paid_amount = total_paid
     self.balance = self.total_amount - self.paid_amount
     if self.balance == Decimal('0.00'):
         self.status = InvoiceStatus.PAID
-    self.save(update_fields=['paid_amount', 'balance', 'status'])</pre>
+    self.save(update_fields=['paid_amount', 'balance', 'status'])</code></pre>
                         </div>
                     </div>
                 </div>

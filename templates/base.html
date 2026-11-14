@@ -23,8 +23,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
-    <!-- Custom Enterprise CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- Custom Enterprise CSS with Versioned Cache Buster -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2.6">
     <style>
         @media print {
             .app-sidebar, .app-topbar, .footer, .btn, .no-print, .alert, .persona-pill, .toast-container-custom, .modal, .filter-toolbar, .theme-toggle-btn {

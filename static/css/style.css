@@ -660,6 +660,270 @@ kbd {
 }
 
 /* ==========================================================================
+   HERO TYPOGRAPHY & GRADIENTS (LINEAR / APPLE SPEC)
+   ========================================================================== */
+.hero-gradient-text {
+    background: linear-gradient(135deg, #0f172a 0%, #312e81 40%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+[data-theme="dark"] .hero-gradient-text {
+    background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 40%, #818cf8 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ==========================================================================
+   PERSONA CARDS (STRIPE & LINEAR INSPIRED EVALUATOR MATRIX)
+   ========================================================================== */
+.persona-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 1.75rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.persona-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: var(--primary);
+    transition: height 0.2s ease;
+}
+
+.persona-card.persona-admin::before { background: linear-gradient(90deg, #ef4444 0%, #f43f5e 100%); }
+.persona-card.persona-teacher::before { background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%); }
+.persona-card.persona-guardian::before { background: linear-gradient(90deg, #10b981 0%, #059669 100%); }
+.persona-card.persona-student::before { background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 100%); }
+
+.persona-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-xl);
+    border-color: var(--border-strong);
+}
+
+.persona-card:hover::before {
+    height: 7px;
+}
+
+.persona-avatar-box {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    color: #ffffff;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.persona-card:hover .persona-avatar-box {
+    transform: scale(1.1) rotate(4deg);
+}
+
+.persona-name {
+    font-size: 1.22rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    color: var(--text-primary);
+    margin-bottom: 0.15rem;
+}
+
+.persona-role-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-pill);
+}
+
+.persona-feature-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.15rem 0 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    flex-grow: 1;
+}
+
+.persona-feature-item {
+    font-size: 0.86rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    line-height: 1.45;
+}
+
+.persona-feature-item i {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+}
+
+/* Rich Persona Action Buttons */
+.btn-persona {
+    width: 100%;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: var(--radius-pill);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    margin-top: auto;
+    border: none;
+}
+
+.btn-persona-admin {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.3);
+}
+.btn-persona-admin:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(239, 68, 68, 0.45);
+}
+
+.btn-persona-teacher {
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+}
+.btn-persona-teacher:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(99, 102, 241, 0.45);
+}
+
+.btn-persona-guardian {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+}
+.btn-persona-guardian:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(16, 185, 129, 0.45);
+}
+
+.btn-persona-student {
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 14px rgba(14, 165, 233, 0.3);
+}
+.btn-persona-student:hover {
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba(14, 165, 233, 0.45);
+}
+
+.btn-persona:active {
+    transform: scale(0.97);
+}
+
+/* 1-Click Login Tiles */
+.persona-tile {
+    display: block;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-subtle);
+    background: var(--bg-surface-subtle);
+    text-decoration: none;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    color: var(--text-primary);
+}
+
+.persona-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-sm);
+    background: var(--bg-surface);
+}
+
+.persona-tile.tile-admin:hover { border-color: #ef4444; }
+.persona-tile.tile-teacher:hover { border-color: #6366f1; }
+.persona-tile.tile-guardian:hover { border-color: #10b981; }
+.persona-tile.tile-student:hover { border-color: #0ea5e9; }
+
+/* ==========================================================================
+   MACOS CODE WINDOW PREVIEW (STRIPE / VERCEL STYLE)
+   ========================================================================== */
+.mac-code-window {
+    background: #090d16;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    text-align: left;
+}
+
+.mac-window-header {
+    background: #05070a;
+    padding: 0.65rem 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mac-dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.mac-dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.mac-dot-red { background: #ff5f56; }
+.mac-dot-yellow { background: #ffbd2e; }
+.mac-dot-green { background: #27c93f; }
+
+.mac-window-title {
+    color: #94a3b8;
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    margin-left: auto;
+    font-weight: 500;
+}
+
+.mac-code-body {
+    padding: 1.25rem 1.35rem;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: #e2e8f0;
+    overflow-x: auto;
+    background: transparent;
+    border: none;
+}
+
+/* ==========================================================================
    BUTTONS WITH TACTILE APPLE/STRIPE PHYSICS
    ========================================================================== */
 .btn-primary-gradient {
