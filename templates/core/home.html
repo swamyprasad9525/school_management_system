@@ -5,9 +5,13 @@
 {% block content %}
 <div class="container-fluid px-lg-5 py-3">
     <!-- Hero Section with Animated Aurora Glow (Stripe / Linear Inspired) -->
-    <div class="card card-premium aurora-bg p-4 p-md-5 mb-5 text-center border-0 position-relative overflow-hidden" 
+    <div class="card card-premium aurora-bg reveal-fade-up p-4 p-md-5 mb-5 text-center border-0 position-relative overflow-hidden" 
          style="background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-surface-subtle) 100%);">
         
+        <!-- Ambient Floating Glowing Orbs -->
+        <div class="ambient-orb ambient-orb-1"></div>
+        <div class="ambient-orb ambient-orb-2"></div>
+
         <div class="aurora-content">
             <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white bg-opacity-75 rounded-pill shadow-xs border mb-3">
                 <span class="badge bg-primary text-white rounded-pill px-2 py-1 font-monospace" style="font-size: 0.72rem;">PRODUCTION GRADE</span>
@@ -47,7 +51,7 @@
     </div>
 
     <!-- Live Animated Metric Counters (Stripe Style) -->
-    <div class="row g-3 mb-5">
+    <div class="row g-3 mb-5 reveal-stagger">
         <div class="col-6 col-lg-3">
             <div class="kpi-card p-4 kpi-purple spotlight-card">
                 <div class="d-flex justify-content-between align-items-center">
@@ -107,7 +111,7 @@
     </div>
 
     <!-- Reviewer Instant Experience Matrix (1-Click Logins) -->
-    <div class="mb-5">
+    <div class="mb-5 reveal-fade-up">
         <div class="text-center mb-5">
             <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white bg-opacity-75 rounded-pill shadow-xs border mb-3">
                 <span class="pulse-indicator" style="width: 7px; height: 7px;"></span>
@@ -122,13 +126,20 @@
             </p>
         </div>
 
-        <div class="row g-4">
+        <div class="row g-4 reveal-stagger">
             <!-- Admin -->
             <div class="col-md-6 col-lg-3">
                 <div class="persona-card persona-admin spotlight-card">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
-                            <i class="bi bi-shield-lock-fill"></i>
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=160&h=160&q=80" 
+                                 alt="Arthur Pendleton" 
+                                 class="persona-avatar-img"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="persona-avatar-box" style="display: none; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);">
+                                <i class="bi bi-shield-lock-fill"></i>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 bg-danger border border-white rounded-circle" style="width: 13px; height: 13px;"></span>
                         </div>
                         <span class="persona-role-badge badge-subtle-danger">Admin</span>
                     </div>
@@ -151,8 +162,15 @@
             <div class="col-md-6 col-lg-3">
                 <div class="persona-card persona-teacher spotlight-card">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);">
-                            <i class="bi bi-person-badge-fill"></i>
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=160&h=160&q=80" 
+                                 alt="Sarah Jenkins" 
+                                 class="persona-avatar-img"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="persona-avatar-box" style="display: none; background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);">
+                                <i class="bi bi-person-badge-fill"></i>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 bg-primary border border-white rounded-circle" style="width: 13px; height: 13px;"></span>
                         </div>
                         <span class="persona-role-badge badge-subtle-primary">Teacher</span>
                     </div>
@@ -175,8 +193,15 @@
             <div class="col-md-6 col-lg-3">
                 <div class="persona-card persona-guardian spotlight-card">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
-                            <i class="bi bi-people-fill"></i>
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&h=160&q=80" 
+                                 alt="Robert Taylor" 
+                                 class="persona-avatar-img"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="persona-avatar-box" style="display: none; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 bg-success border border-white rounded-circle" style="width: 13px; height: 13px;"></span>
                         </div>
                         <span class="persona-role-badge badge-subtle-success">Guardian</span>
                     </div>
@@ -199,8 +224,15 @@
             <div class="col-md-6 col-lg-3">
                 <div class="persona-card persona-student spotlight-card">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="persona-avatar-box" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
-                            <i class="bi bi-mortarboard-fill"></i>
+                        <div class="position-relative">
+                            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=160&h=160&q=80" 
+                                 alt="Alice Taylor" 
+                                 class="persona-avatar-img"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="persona-avatar-box" style="display: none; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);">
+                                <i class="bi bi-mortarboard-fill"></i>
+                            </div>
+                            <span class="position-absolute bottom-0 end-0 bg-info border border-white rounded-circle" style="width: 13px; height: 13px;"></span>
                         </div>
                         <span class="persona-role-badge badge-subtle-info">Student</span>
                     </div>
@@ -222,7 +254,7 @@
     </div>
 
     <!-- Interactive Feature Preview Tabs (Linear / Stripe Style) -->
-    <div class="card card-premium p-4 p-md-5 mb-5">
+    <div class="card card-premium reveal-fade-up p-4 p-md-5 mb-5">
         <div class="text-center mb-4">
             <span class="badge badge-subtle-primary px-3 py-1 rounded-pill small font-monospace">INTERACTIVE ARCHITECTURE</span>
             <h2 class="display-6 fw-extrabold hero-gradient-text mt-2 mb-2" style="letter-spacing: -0.03em;">Engineered to Satisfy Rigorous Production Standards</h2>
@@ -422,6 +454,8 @@ def record_attendance(request):
     function animateCounters() {
         const counters = document.querySelectorAll('.count-up');
         counters.forEach(counter => {
+            if (counter.dataset.animated) return;
+            counter.dataset.animated = 'true';
             const target = parseInt(counter.getAttribute('data-target'), 10) || 0;
             const duration = 1200; // ms
             const stepTime = 30;
