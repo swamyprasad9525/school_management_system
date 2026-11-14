@@ -220,12 +220,17 @@
                     <h6 class="fw-bold mb-0">System Audit Trail (Material Operations)</h6>
                     <span class="small text-muted">Immutable event records of actions, payments, and marks</span>
                 </div>
-                <a href="{% url 'audit:logs_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                    View Complete Trail &rarr;
-                </a>
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn-export-table" onclick="exportTableToCSV('recentLogsTable', 'recent_audit_events.csv')">
+                        <i class="bi bi-download text-primary"></i>CSV
+                    </button>
+                    <a href="{% url 'audit:logs_list' %}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                        Full Trail &rarr;
+                    </a>
+                </div>
             </div>
             <div class="table-responsive">
-                <table class="table table-modern align-middle mb-0">
+                <table class="table table-modern align-middle mb-0" id="recentLogsTable">
                     <thead>
                         <tr>
                             <th>Time</th>

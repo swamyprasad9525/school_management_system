@@ -1,14 +1,22 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="htmlRoot" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Algions SMS | Enterprise School Operations{% endblock %}</title>
+    <title>{% block title %}Algions SMS | Enterprise School Operating System{% endblock %}</title>
+    <!-- Prevent Theme Flash -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('algions-theme') || 
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
     <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -19,7 +27,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
         @media print {
-            .app-sidebar, .app-topbar, .footer, .btn, .no-print, .alert, .persona-pill, .toast-container-custom, .modal {
+            .app-sidebar, .app-topbar, .footer, .btn, .no-print, .alert, .persona-pill, .toast-container-custom, .modal, .filter-toolbar, .theme-toggle-btn {
                 display: none !important;
             }
             .app-main {
@@ -39,7 +47,7 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <!-- Global Floating Toast Container -->
+    <!-- Global Floating Toast Notification Container -->
     <div class="toast-container-custom" id="toastContainer"></div>
 
     <div class="app-container">
@@ -183,7 +191,7 @@
 
         <!-- Main Workspace Area -->
         <div class="app-main {% if not user.is_authenticated %}m-0{% endif %}">
-            <!-- Modern Topbar -->
+            <!-- Modern Frosted Glass Topbar -->
             <header class="app-topbar">
                 <div class="d-flex align-items-center gap-3">
                     {% if user.is_authenticated %}
@@ -195,7 +203,7 @@
                             <div class="sidebar-logo-icon" style="width: 34px; height: 34px;">
                                 <i class="bi bi-mortarboard-fill fs-6"></i>
                             </div>
-                            <span class="fs-5 fw-bold text-dark tracking-tight">Algions SMS</span>
+                            <span class="fs-5 fw-extrabold text-dark tracking-tight">Algions SMS</span>
                         </a>
                     {% endif %}
 
@@ -214,10 +222,15 @@
                 </div>
 
                 <!-- Right Side Actions & Persona Switcher -->
-                <div class="d-flex align-items-center gap-3">
+                <div class="d-flex align-items-center gap-2 gap-md-3">
+                    <!-- Dark / Light Theme Toggle Button -->
+                    <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle Dark / Light Theme (Press D)" onclick="toggleTheme()">
+                        <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+                    </button>
+
                     <!-- Keyboard Shortcuts Quick Trigger -->
                     <button class="btn btn-light btn-sm rounded-circle border p-0 d-flex align-items-center justify-content-center" 
-                            style="width: 32px; height: 32px;" 
+                            style="width: 34px; height: 34px;" 
                             title="Keyboard Shortcuts (?)" 
                             onclick="openShortcutsModal()">
                         <i class="bi bi-keyboard text-muted"></i>
@@ -229,7 +242,7 @@
                             <span class="pulse-indicator"></span>
                             <span class="small fw-semibold">Switch Persona</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 p-2" style="border-radius: 12px; min-width: 230px;">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border p-2" style="border-radius: 12px; min-width: 230px;">
                             <li class="dropdown-header text-uppercase small text-muted">Instant Evaluation Switch</li>
                             <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'admin' %}"><i class="bi bi-shield-lock me-2 text-danger"></i>Admin (Arthur)</a></li>
                             <li><a class="dropdown-item rounded-2 py-2" href="{% url 'accounts:demo_switch' 'teacher' %}"><i class="bi bi-person-badge me-2 text-primary"></i>Teacher 1 (Sarah)</a></li>
@@ -252,7 +265,7 @@
 
             <!-- Page Body Content -->
             <div class="p-4 flex-grow-1">
-                <!-- Breadcrumbs row -->
+                <!-- Dynamic Breadcrumbs -->
                 {% block breadcrumb %}{% endblock %}
 
                 {% if messages %}
@@ -288,17 +301,18 @@
         </div>
     </div>
 
-    <!-- Spotlight Command Palette Modal (Ctrl + K) -->
+    <!-- Spotlight Command Palette Modal (Ctrl + K / Cmd + K) -->
     <div class="modal fade command-palette-modal" id="commandPaletteModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 640px;">
-            <div class="modal-content shadow-lg">
+        <div class="modal-dialog modal-dialog-centered modal-lg" style="max-width: 650px;">
+            <div class="modal-content shadow-xl">
                 <div class="command-input-wrapper">
                     <i class="bi bi-search fs-5 text-muted"></i>
-                    <input type="text" class="command-input" id="commandInput" placeholder="Type a command or jump to page..." autofocus>
-                    <span class="badge bg-light text-dark border font-monospace small">ESC</span>
+                    <input type="text" class="command-input" id="commandInput" placeholder="Type a command, page name, or action..." autocomplete="off">
+                    <kbd class="small">ESC</kbd>
                 </div>
                 <div class="command-list" id="commandList">
-                    <div class="px-3 py-2 small text-uppercase fw-bold text-muted" style="font-size: 0.7rem;">Quick Navigation</div>
+                    <!-- Quick Navigation -->
+                    <div class="px-3 py-2 small text-uppercase fw-bold text-muted" style="font-size: 0.7rem; letter-spacing: 0.05em;">Pages & Cockpits</div>
                     <a href="{% url 'core:home' %}" class="command-item">
                         <span><i class="bi bi-grid-fill text-primary me-2"></i>System Overview & Evaluation Hub</span>
                         <span class="badge bg-light text-dark border small font-monospace">Home</span>
@@ -316,11 +330,11 @@
                         <span class="badge bg-light text-dark border small font-monospace">Students</span>
                     </a>
                     <a href="{% url 'attendance:record_attendance' %}" class="command-item">
-                        <span><i class="bi bi-calendar2-check-fill text-success me-2"></i>Record Daily Attendance</span>
+                        <span><i class="bi bi-calendar2-check-fill text-success me-2"></i>Record Daily Attendance Roll-Call</span>
                         <span class="badge bg-light text-dark border small font-monospace">Attendance</span>
                     </a>
                     <a href="{% url 'attendance:summary_report' %}" class="command-item">
-                        <span><i class="bi bi-bar-chart-fill text-success me-2"></i>Attendance Analytics & Summaries</span>
+                        <span><i class="bi bi-bar-chart-fill text-success me-2"></i>Attendance Analytics & Turnout Health</span>
                         <span class="badge bg-light text-dark border small font-monospace">Analytics</span>
                     </a>
                     <a href="{% url 'examinations:teacher_marks_entry' %}" class="command-item">
@@ -339,7 +353,20 @@
                         <span><i class="bi bi-shield-check text-secondary me-2"></i>System Security Audit Trail</span>
                         <span class="badge bg-light text-dark border small font-monospace">Audit</span>
                     </a>
-                    <div class="px-3 py-2 mt-2 small text-uppercase fw-bold text-muted border-top" style="font-size: 0.7rem;">Instant Switch Personas</div>
+
+                    <!-- Fast Actions & Tools -->
+                    <div class="px-3 py-2 mt-2 small text-uppercase fw-bold text-muted border-top" style="font-size: 0.7rem; letter-spacing: 0.05em;">Actions & Controls</div>
+                    <div class="command-item" onclick="toggleTheme(); bootstrap.Modal.getInstance(document.getElementById('commandPaletteModal')).hide();">
+                        <span><i class="bi bi-moon-stars text-primary me-2"></i>Toggle Dark / Light Theme</span>
+                        <span class="badge bg-light text-dark border small font-monospace">D</span>
+                    </div>
+                    <a href="/api/docs/" target="_blank" class="command-item">
+                        <span><i class="bi bi-code-slash text-info me-2"></i>Open OpenAPI 3.0 Interactive Swagger</span>
+                        <span class="badge bg-light text-dark border small font-monospace">API</span>
+                    </a>
+
+                    <!-- Instant Switch Personas -->
+                    <div class="px-3 py-2 mt-2 small text-uppercase fw-bold text-muted border-top" style="font-size: 0.7rem; letter-spacing: 0.05em;">Instant Switch Personas</div>
                     <a href="{% url 'accounts:demo_switch' 'admin' %}" class="command-item">
                         <span><i class="bi bi-shield-lock me-2 text-danger"></i>Switch to Admin (Arthur Pendleton)</span>
                     </a>
@@ -368,19 +395,23 @@
                 <div class="modal-body p-4">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-body fw-medium">Open Command Palette</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">Ctrl + K</span>
+                        <kbd>Ctrl + K</kbd>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-body fw-medium">Toggle Dark / Light Theme</span>
+                        <kbd>D</kbd>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-body fw-medium">Open Shortcuts Dialog</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">?</span>
+                        <kbd>?</kbd>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-body fw-medium">Print Report Card / Receipt</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">Ctrl + P</span>
+                        <kbd>Ctrl + P</kbd>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
-                        <span class="text-body fw-medium">Close Modal</span>
-                        <span class="badge bg-light text-dark border font-monospace px-2 py-1">ESC</span>
+                        <span class="text-body fw-medium">Close Modal / Dismiss Dialog</span>
+                        <kbd>ESC</kbd>
                     </div>
                 </div>
             </div>
@@ -392,7 +423,33 @@
 
     <!-- Global Application Scripts -->
     <script>
-        // Live Clock
+        // 1. Theme Engine: Dark Mode / Light Mode with Persistence
+        function applyTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('algions-theme', theme);
+            const icon = document.getElementById('themeIcon');
+            if (icon) {
+                icon.className = theme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-stars-fill';
+            }
+        }
+
+        function toggleTheme() {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            showToast(`Theme switched to <strong>${next.toUpperCase()}</strong> mode`, 'info');
+        }
+
+        // Initialize Theme Icon state
+        document.addEventListener('DOMContentLoaded', () => {
+            const current = document.documentElement.getAttribute('data-theme') || 'light';
+            const icon = document.getElementById('themeIcon');
+            if (icon && current === 'dark') {
+                icon.className = 'bi bi-sun-fill text-warning';
+            }
+        });
+
+        // 2. Live Institutional Clock
         function updateLiveClock() {
             const clockEl = document.getElementById('currentTimeDisplay');
             if (clockEl) {
@@ -403,7 +460,22 @@
         setInterval(updateLiveClock, 1000);
         updateLiveClock();
 
-        // Custom Toast Notification System
+        // 3. Linear-Style Cursor Spotlight Effect
+        function initSpotlightCards() {
+            const cards = document.querySelectorAll('.spotlight-card, .card-premium');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    card.style.setProperty('--mouse-x', `${x}px`);
+                    card.style.setProperty('--mouse-y', `${y}px`);
+                });
+            });
+        }
+        document.addEventListener('DOMContentLoaded', initSpotlightCards);
+
+        // 4. Custom Toast Notification System
         function showToast(message, type = 'info') {
             const container = document.getElementById('toastContainer');
             if (!container) return;
@@ -419,7 +491,7 @@
             toast.innerHTML = `
                 <i class="bi ${iconClass} fs-5"></i>
                 <div class="flex-grow-1">${message}</div>
-                <button type="button" class="btn-close btn-close-white small ms-2" onclick="this.parentElement.remove()"></button>
+                <button type="button" class="btn-close small ms-2" onclick="this.parentElement.remove()"></button>
             `;
 
             container.appendChild(toast);
@@ -432,7 +504,7 @@
             }, 3500);
         }
 
-        // Modern Copy to Clipboard with Toast
+        // 5. Modern Copy to Clipboard with Toast
         function copyToClipboard(text, label = 'Admission Number') {
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(text).then(function() {
@@ -445,7 +517,40 @@
             }
         }
 
-        // Command Palette
+        // 6. 1-Click Client-Side Table Exporter to CSV
+        function exportTableToCSV(tableId, filename = 'export.csv') {
+            const table = document.getElementById(tableId);
+            if (!table) {
+                showToast('Table not found for export', 'error');
+                return;
+            }
+
+            const rows = table.querySelectorAll('tr');
+            const csv = [];
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('th, td');
+                const rowData = [];
+                cols.forEach(col => {
+                    // Clean text (remove inner linebreaks & excess spaces)
+                    let text = col.innerText.replace(/(\r\n|\n|\r)/gm, ' ').replace(/\s+/g, ' ').trim();
+                    text = text.replace(/"/g, '""');
+                    rowData.push(`"${text}"`);
+                });
+                if (rowData.length > 0) csv.push(rowData.join(','));
+            });
+
+            const csvContent = "data:text/csv;charset=utf-8," + csv.join("\n");
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", filename);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`Exported <strong>${filename}</strong> successfully!`, 'success');
+        }
+
+        // 7. Command Palette Modal
         function openCommandPalette() {
             const modalEl = document.getElementById('commandPaletteModal');
             if (modalEl) {
@@ -463,25 +568,32 @@
             }
         }
 
-        // Global Hotkeys
+        // 8. Global Hotkey Listeners
         document.addEventListener('keydown', function(e) {
+            const isTyping = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName);
+
             // Ctrl + K or Cmd + K
             if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault();
                 openCommandPalette();
             }
-            // Press '?' (Shift + /)
-            if (e.key === '?' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            // Press '?'
+            if (e.key === '?' && !isTyping) {
                 e.preventDefault();
                 openShortcutsModal();
             }
+            // Press 'd' or 'D' for Theme Toggle
+            if ((e.key === 'd' || e.key === 'D') && !isTyping && !e.ctrlKey && !e.metaKey) {
+                e.preventDefault();
+                toggleTheme();
+            }
         });
 
-        // Command Input Filter
+        // 9. Command Palette Filter & Arrow Key Navigation
         const cmdInput = document.getElementById('commandInput');
         if (cmdInput) {
             cmdInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase();
+                const query = this.value.toLowerCase().trim();
                 const items = document.querySelectorAll('.command-item');
                 items.forEach(function(item) {
                     const text = item.textContent.toLowerCase();
