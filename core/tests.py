@@ -355,3 +355,25 @@ class SchoolManagementSystemAcceptanceTests(TestCase):
         inv = FeeInvoice.objects.filter(student=self.student1, fee_structure=self.fee_structure).last()
         self.assertIsNotNone(inv)
         self.assertEqual(inv.total_amount, Decimal("1000.00"))
+
+    def test_all_dashboards_and_summary_views(self):
+        """
+        Tests that Admin, Teacher, Guardian dashboards and Attendance Summary report
+        all render successfully with HTTP 200.
+        """
+        # Admin
+        self.client.login(username="test_admin", password="password123")
+        res = self.client.get(reverse('core:admin_dashboard'))
+        self.assertEqual(res.status_code, 200)
+        res = self.client.get(reverse('attendance:summary_report'))
+        self.assertEqual(res.status_code, 200)
+
+        # Teacher
+        self.client.login(username="teacher_sarah", password="password123")
+        res = self.client.get(reverse('core:teacher_dashboard'))
+        self.assertEqual(res.status_code, 200)
+
+        # Guardian
+        self.client.login(username="guardian_robert", password="password123")
+        res = self.client.get(reverse('core:guardian_dashboard'))
+        self.assertEqual(res.status_code, 200)
